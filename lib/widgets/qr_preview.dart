@@ -16,6 +16,7 @@ class QRPreviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final foregroundColor = Color(qrData.foregroundColor);
     final backgroundColor = Color(qrData.backgroundColor);
+    final hasFrameText = qrData.frameText != null && qrData.frameText!.isNotEmpty;
 
     return AspectRatio(
       aspectRatio: 1,
@@ -40,47 +41,48 @@ class QRPreviewWidget extends StatelessWidget {
             : null,
         child: FittedBox(
           fit: BoxFit.contain,
-          child: SizedBox(
-            width: 250,
-            height: 250,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                QrImageView(
-                  data: qrData.content,
-                  version: QrVersions.auto,
-                  size: 250,
-                  backgroundColor: backgroundColor,
-                  eyeStyle: QrEyeStyle(
-                    eyeShape: QrEyeShape.square,
-                    color: foregroundColor,
-                  ),
-                  dataModuleStyle: QrDataModuleStyle(
-                    dataModuleShape: QrDataModuleShape.square,
-                    color: foregroundColor,
-                  ),
-                  embeddedImage: qrData.logoPath != null
-                      ? NetworkImage(qrData.logoPath!)
-                      : null,
-                  embeddedImageStyle: qrData.logoPath != null
-                      ? QrEmbeddedImageStyle(size: Size(50, 50))
-                      : null,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              QrImageView(
+                data: qrData.content,
+                version: QrVersions.auto,
+                size: 200,
+                backgroundColor: backgroundColor,
+                eyeStyle: QrEyeStyle(
+                  eyeShape: QrEyeShape.square,
+                  color: foregroundColor,
                 ),
-                if (qrData.frameText != null &&
-                    qrData.frameText!.isNotEmpty) ...[
-                  SizedBox(height: 16),
-                  Text(
+                dataModuleStyle: QrDataModuleStyle(
+                  dataModuleShape: QrDataModuleShape.square,
+                  color: foregroundColor,
+                ),
+                embeddedImage: qrData.logoPath != null
+                    ? NetworkImage(qrData.logoPath!)
+                    : null,
+                embeddedImageStyle: qrData.logoPath != null
+                    ? QrEmbeddedImageStyle(size: Size(40, 40))
+                    : null,
+              ),
+              if (hasFrameText) ...[
+                SizedBox(height: 8),
+                SizedBox(
+                  width: 200,
+                  child: Text(
                     qrData.frameText!,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: foregroundColor,
                       letterSpacing: 1.5,
                     ),
                   ),
-                ],
+                ),
               ],
-            ),
+            ],
           ),
         ),
       ),

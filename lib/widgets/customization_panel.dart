@@ -159,17 +159,26 @@ class CustomizationPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Error Correction',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Flexible(
+              child: Text(
+                'Error Correction',
+                style: TextStyle(fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            Text(
-              getLevelLabel(correctionLevel),
-              style: TextStyle(
-                color: AppTheme.primaryPurple,
-                fontWeight: FontWeight.w600,
+            SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                getLevelLabel(correctionLevel),
+                style: TextStyle(
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
               ),
             ),
           ],

@@ -99,255 +99,283 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
     }
   }
 
+  Widget _buildInputCard() {
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Network Details',
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              controller: _ssidController,
+              decoration: InputDecoration(
+                labelText: 'Network Name (SSID) *',
+                hintText: 'My WiFi Network',
+                prefixIcon: Icon(Icons.wifi),
+              ),
+              onChanged: (_) => _generateQR(),
+            ),
+            SizedBox(height: 12),
+            TextFormField(
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                hintText: 'Enter password',
+                prefixIcon: Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              obscureText: _obscurePassword,
+              onChanged: (_) => _generateQR(),
+            ),
+            SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _encryptionType,
+              decoration: InputDecoration(
+                labelText: 'Encryption Type',
+                prefixIcon: Icon(Icons.security),
+              ),
+              items: [
+                DropdownMenuItem(
+                  value: 'WPA',
+                  child: Text('WPA/WPA2'),
+                ),
+                DropdownMenuItem(value: 'WEP', child: Text('WEP')),
+                DropdownMenuItem(value: '', child: Text('None')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _encryptionType = value);
+                  _generateQR();
+                }
+              },
+            ),
+            SizedBox(height: 12),
+            SwitchListTile(
+              title: Text('Hidden Network'),
+              subtitle: Text(
+                'Enable if network SSID is hidden',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+              value: _isHidden,
+              onChanged: (value) {
+                setState(() => _isHidden = value);
+                _generateQR();
+              },
+              activeThumbColor: AppTheme.primaryPurple,
+              contentPadding: EdgeInsets.zero,
+            ),
+            SizedBox(height: 24),
+            CustomizationPanel(
+              foregroundColor: _foregroundColor,
+              backgroundColor: _backgroundColor,
+              correctionLevel: _correctionLevel,
+              frameText: _frameText,
+              onForegroundColorChanged: (color) {
+                setState(() => _foregroundColor = color);
+                _generateQR();
+              },
+              onBackgroundColorChanged: (color) {
+                setState(() => _backgroundColor = color);
+                _generateQR();
+              },
+              onCorrectionLevelChanged: (level) {
+                setState(() => _correctionLevel = level);
+                _generateQR();
+              },
+              onFrameTextChanged: (text) {
+                setState(() => _frameText = text);
+                _generateQR();
+              },
+              onSave: _currentQR != null ? saveToHistory : null,
+              isSaved: _isSaved,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewCard() {
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Text(
+              'Preview',
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 16),
+            _currentQR != null
+                ? QRPreviewWidget(qrData: _currentQR!)
+                : AspectRatio(
+                    aspectRatio: 1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.backgroundLight,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppTheme.divider,
+                          width: 2,
+                        ),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.qr_code_2,
+                              size: 64,
+                              color: AppTheme.textSecondary.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Enter SSID to preview',
+                              style: TextStyle(
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+            SizedBox(height: 16),
+            if (_currentQR != null)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final stacked = constraints.maxWidth < 200;
+                  if (stacked) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              QrExportService.saveAsPng(context, _currentQR!);
+                            },
+                            icon: Icon(Icons.download),
+                            label: Text('PNG'),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              QrExportService.showSvgExportModal(context, _currentQR!);
+                            },
+                            icon: Icon(Icons.code),
+                            label: Text('SVG'),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Flexible(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              QrExportService.saveAsPng(context, _currentQR!);
+                            },
+                            icon: Icon(Icons.download),
+                            label: Text('PNG'),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Flexible(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              QrExportService.showSvgExportModal(context, _currentQR!);
+                            },
+                            icon: Icon(Icons.code),
+                            label: Text('SVG'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Wi-Fi Generator',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Create a QR code for Wi-Fi network access',
-            style: TextStyle(color: AppTheme.textSecondary),
-          ),
-          SizedBox(height: 24),
-          Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stacked = constraints.maxWidth < 600;
+        return SingleChildScrollView(
+          padding: EdgeInsets.all(stacked ? 16 : 24),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 2,
-                child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Network Details',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(height: 16),
-                        TextFormField(
-                          controller: _ssidController,
-                          decoration: InputDecoration(
-                            labelText: 'Network Name (SSID) *',
-                            hintText: 'My WiFi Network',
-                            prefixIcon: Icon(Icons.wifi),
-                          ),
-                          onChanged: (_) => _generateQR(),
-                        ),
-                        SizedBox(height: 12),
-                        TextFormField(
-                          controller: _passwordController,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            hintText: 'Enter password',
-                            prefixIcon: Icon(Icons.lock),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                          ),
-                          obscureText: _obscurePassword,
-                          onChanged: (_) => _generateQR(),
-                        ),
-                        SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          initialValue: _encryptionType,
-                          decoration: InputDecoration(
-                            labelText: 'Encryption Type',
-                            prefixIcon: Icon(Icons.security),
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 'WPA',
-                              child: Text('WPA/WPA2'),
-                            ),
-                            DropdownMenuItem(value: 'WEP', child: Text('WEP')),
-                            DropdownMenuItem(value: '', child: Text('None')),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() => _encryptionType = value);
-                              _generateQR();
-                            }
-                          },
-                        ),
-                        SizedBox(height: 12),
-                        SwitchListTile(
-                          title: Text('Hidden Network'),
-                          subtitle: Text(
-                            'Enable if network SSID is hidden',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                          value: _isHidden,
-                          onChanged: (value) {
-                            setState(() => _isHidden = value);
-                            _generateQR();
-                          },
-                          activeThumbColor: AppTheme.primaryPurple,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        SizedBox(height: 24),
-                        CustomizationPanel(
-                          foregroundColor: _foregroundColor,
-                          backgroundColor: _backgroundColor,
-                          correctionLevel: _correctionLevel,
-                          frameText: _frameText,
-                          onForegroundColorChanged: (color) {
-                            setState(() => _foregroundColor = color);
-                            _generateQR();
-                          },
-                          onBackgroundColorChanged: (color) {
-                            setState(() => _backgroundColor = color);
-                            _generateQR();
-                          },
-                          onCorrectionLevelChanged: (level) {
-                            setState(() => _correctionLevel = level);
-                            _generateQR();
-                          },
-                          onFrameTextChanged: (text) {
-                            setState(() => _frameText = text);
-                            _generateQR();
-                          },
-                          onSave: _currentQR != null ? saveToHistory : null,
-                          isSaved: _isSaved,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              Text(
+                'Wi-Fi Generator',
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
-              SizedBox(width: 24),
-              Expanded(
-                flex: 1,
-                child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Preview',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(height: 16),
-                        _currentQR != null
-                            ? QRPreviewWidget(qrData: _currentQR!)
-                            : AspectRatio(
-                                aspectRatio: 1,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.backgroundLight,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: AppTheme.divider,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.qr_code_2,
-                                        size: 64,
-                                        color: AppTheme.textSecondary.withValues(
-                                          alpha: 0.5,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'Enter SSID to preview',
-                                        style: TextStyle(
-                                          color: AppTheme.textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                        SizedBox(height: 16),
-                        if (_currentQR != null)
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final stacked = constraints.maxWidth < 200;
-                              if (stacked) {
-                                return Column(
-                                  children: [
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton.icon(
-                                        onPressed: () {
-                                          QrExportService.saveAsPng(context, _currentQR!);
-                                        },
-                                        icon: Icon(Icons.download),
-                                        label: Text('PNG'),
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: OutlinedButton.icon(
-                                        onPressed: () {
-                                          QrExportService.showSvgExportModal(context, _currentQR!);
-                                        },
-                                        icon: Icon(Icons.code),
-                                        label: Text('SVG'),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      QrExportService.saveAsPng(context, _currentQR!);
-                                    },
-                                    icon: Icon(Icons.download),
-                                    label: Text('PNG'),
-                                  ),
-                                  SizedBox(width: 12),
-                                  OutlinedButton.icon(
-                                    onPressed: () {
-                                      QrExportService.showSvgExportModal(context, _currentQR!);
-                                    },
-                                    icon: Icon(Icons.code),
-                                    label: Text('SVG'),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
+              SizedBox(height: 8),
+              Text(
+                'Create a QR code for Wi-Fi network access',
+                style: TextStyle(color: AppTheme.textSecondary),
               ),
+              SizedBox(height: 24),
+              if (stacked)
+                Column(
+                  children: [
+                    _buildInputCard(),
+                    SizedBox(height: 24),
+                    _buildPreviewCard(),
+                  ],
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 2, child: _buildInputCard()),
+                    SizedBox(width: 24),
+                    Expanded(flex: 1, child: _buildPreviewCard()),
+                  ],
+                ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -404,7 +404,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 Padding(
-                  padding: EdgeInsets.only(bottom: 8),
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).padding.bottom + 8,
+                  ),
                   child: Text(
                     'Zdyaksa Labs 2026',
                     style: TextStyle(
