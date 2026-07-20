@@ -4,8 +4,6 @@
 # documentation.
 
 name: zQR
-run: flutter build web --base-href "/qr_generator_web/"
-
 on:
   push:
     branches:
