@@ -165,56 +165,64 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
     );
   }
 
-  Widget _buildPreviewCard() {
+  Widget _buildPreviewCard({bool compact = false}) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: EdgeInsets.all(compact ? 12 : 24),
         child: Column(
           children: [
             Text(
               'Preview',
-              style: Theme.of(context).textTheme.titleMedium
+              style: (compact
+                      ? Theme.of(context).textTheme.titleSmall
+                      : Theme.of(context).textTheme.titleMedium)
                   ?.copyWith(fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 16),
-            _currentQR != null
-                ? QRPreviewWidget(qrData: _currentQR!)
-                : AspectRatio(
-                    aspectRatio: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppTheme.backgroundLight,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppTheme.divider,
-                          width: 2,
+            SizedBox(height: compact ? 8 : 16),
+            Center(
+              child: SizedBox(
+                width: compact ? 140 : null,
+                height: compact ? 140 : null,
+                child: _currentQR != null
+                    ? QRPreviewWidget(qrData: _currentQR!)
+                    : AspectRatio(
+                        aspectRatio: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppTheme.backgroundLight,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppTheme.divider,
+                              width: 2,
+                            ),
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.qr_code_2,
+                                  size: 64,
+                                  color: AppTheme.textSecondary.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Enter text to preview',
+                                  style: TextStyle(
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.qr_code_2,
-                              size: 64,
-                              color: AppTheme.textSecondary.withValues(
-                                alpha: 0.5,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Enter text to preview',
-                              style: TextStyle(
-                                color: AppTheme.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-            SizedBox(height: 16),
+              ),
+            ),
+            SizedBox(height: compact ? 8 : 16),
             if (_currentQR != null)
               LayoutBuilder(
                 builder: (context, constraints) {
@@ -308,9 +316,9 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
               if (stacked)
                 Column(
                   children: [
+                    _buildPreviewCard(compact: true),
+                    SizedBox(height: 16),
                     _buildInputCard(),
-                    SizedBox(height: 24),
-                    _buildPreviewCard(),
                   ],
                 )
               else
