@@ -9,6 +9,10 @@ on:
   push:
     branches:
       - main
+permissions:
+  contents: write
+  pull-requests: write # Add if your action handles PRs or issues
+      
 jobs:
   build:    
     runs-on: ubuntu-latest
