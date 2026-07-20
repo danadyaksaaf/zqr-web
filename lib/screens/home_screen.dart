@@ -11,54 +11,29 @@ import 'text_generator_screen.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  final VoidCallback onToggleTheme;
-  final bool isDarkMode;
-
   const HomeScreen({
     super.key,
     required this.onToggleTheme,
     required this.isDarkMode,
   });
 
+  final bool isDarkMode;
+  final VoidCallback onToggleTheme;
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-  QRData? _pendingData;
-  int? _pendingTabIndex;
-  StreamSubscription<bool>? _connectivitySubscription;
-
+  final GlobalKey textKey = GlobalKey();
   final GlobalKey urlKey = GlobalKey();
   final GlobalKey vcardKey = GlobalKey();
   final GlobalKey wifiKey = GlobalKey();
-  final GlobalKey textKey = GlobalKey();
 
-  @override
-  void initState() {
-    super.initState();
-    _initConnectivity();
-  }
-
-  Future<void> _initConnectivity() async {
-    final connectivity = ConnectivityService();
-    await connectivity.init();
-    _connectivitySubscription = connectivity.onConnectivityChange.listen((
-      isOnline,
-    ) {
-      if (mounted) {
-        if (isOnline) {
-          AppMessages.showSuccess(context, "You're back online.");
-        } else {
-          AppMessages.showError(
-            context,
-            "You're offline. Some features may be unavailable.",
-          );
-        }
-      }
-    });
-  }
+  StreamSubscription<bool>? _connectivitySubscription;
+  QRData? _pendingData;
+  int? _pendingTabIndex;
+  int _selectedIndex = 0;
 
   @override
   void dispose() {
@@ -66,13 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  List<Widget> get _screens => [
-    URLGeneratorScreen(key: urlKey),
-    VCardGeneratorScreen(key: vcardKey),
-    WiFiGeneratorScreen(key: wifiKey),
-    TextGeneratorScreen(key: textKey),
-    HistoryScreen(onNavigateToTab: navigateToTabWithData),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _initConnectivity();
+  }
 
   void navigateToTabWithData(int tabIndex, QRData data) {
     final keys = [urlKey, vcardKey, wifiKey, textKey];
@@ -94,6 +67,33 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
   }
+
+  Future<void> _initConnectivity() async {
+    final connectivity = ConnectivityService();
+    await connectivity.init();
+    _connectivitySubscription = connectivity.onConnectivityChange.listen((
+      isOnline,
+    ) {
+      if (mounted) {
+        if (isOnline) {
+          AppMessages.showSuccess(context, "You're back online.");
+        } else {
+          AppMessages.showError(
+            context,
+            "You're offline. Some features may be unavailable.",
+          );
+        }
+      }
+    });
+  }
+
+  List<Widget> get _screens => [
+    URLGeneratorScreen(key: urlKey),
+    VCardGeneratorScreen(key: vcardKey),
+    WiFiGeneratorScreen(key: wifiKey),
+    TextGeneratorScreen(key: textKey),
+    HistoryScreen(onNavigateToTab: navigateToTabWithData),
+  ];
 
   bool _hasUnsavedChanges() {
     final keys = [urlKey, vcardKey, wifiKey, textKey];
