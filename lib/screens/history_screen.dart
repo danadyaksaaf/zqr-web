@@ -144,102 +144,113 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'History',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Manage your previously generated QR codes',
-                    style: TextStyle(color: AppTheme.textSecondary),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 24),
-          if (_history.isNotEmpty)
-            Row(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildFilterChip('all', 'All'),
-                        _buildFilterChip('url', 'URL'),
-                        _buildFilterChip('vcard', 'vCard'),
-                        _buildFilterChip('wifi', 'Wi-Fi'),
-                        _buildFilterChip('text', 'Text'),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                OutlinedButton.icon(
-                  onPressed: _clearAll,
-                  icon: Icon(Icons.delete_sweep, size: 18),
-                  label: Text('Clear All'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppTheme.error,
-                    side: BorderSide(color: AppTheme.error),
-                  ),
-                ),
-              ],
-            ),
-          SizedBox(height: 16),
-          if (_filteredHistory.isEmpty)
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(48),
-                child: Center(
-                  child: Column(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.history,
-                        size: 64,
-                        color: AppTheme.textSecondary.withValues(alpha: 0.5),
-                      ),
-                      SizedBox(height: 16),
                       Text(
-                        _history.isEmpty
-                            ? 'No QR codes generated yet'
-                            : 'No items match the filter',
-                        style: TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 16,
+                        'History',
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Manage your previously generated QR codes',
+                        style: TextStyle(color: AppTheme.textSecondary),
                       ),
                     ],
                   ),
-                ),
+                ],
               ),
-            )
-          else
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: _filteredHistory.map((item) => SizedBox(
-                width: 240,
-                height: 260,
-                child: _buildHistoryCard(item),
-              )).toList(),
-            ),
-        ],
-      ),
+              SizedBox(height: 24),
+              if (_history.isNotEmpty)
+                Row(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildFilterChip('all', 'All'),
+                            _buildFilterChip('url', 'URL'),
+                            _buildFilterChip('vcard', 'vCard'),
+                            _buildFilterChip('wifi', 'Wi-Fi'),
+                            _buildFilterChip('text', 'Text'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      onPressed: _clearAll,
+                      icon: Icon(Icons.delete_sweep, size: 18),
+                      label: Text('Clear All'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.error,
+                        side: BorderSide(color: AppTheme.error),
+                      ),
+                    ),
+                  ],
+                ),
+              SizedBox(height: 16),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _filteredHistory.isEmpty
+              ? Card(
+                  margin: EdgeInsets.symmetric(horizontal: 24),
+                  child: Padding(
+                    padding: EdgeInsets.all(48),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.history,
+                            size: 64,
+                            color: AppTheme.textSecondary.withValues(alpha: 0.5),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            _history.isEmpty
+                                ? 'No QR codes generated yet'
+                                : 'No items match the filter',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  itemCount: _filteredHistory.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 16),
+                      child: SizedBox(
+                        height: 260,
+                        child: _buildHistoryCard(_filteredHistory[index]),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 
