@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/qr_data.dart';
 import '../theme/app_theme.dart';
@@ -16,6 +17,7 @@ class TextGeneratorScreen extends StatefulWidget {
 class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
   final _textController = TextEditingController();
   static const int _maxCharacters = 2500;
+  Timer? _debounce;
 
   int _foregroundColor = 0xFF212121;
   int _backgroundColor = 0xFFFFFFFF;
@@ -29,8 +31,14 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _textController.dispose();
     super.dispose();
+  }
+
+  void _onFieldChanged() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), _generateQR);
   }
 
   void _generateQR() {
@@ -105,7 +113,7 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
               ),
               maxLines: 8,
               maxLength: _maxCharacters,
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 4),
             Row(
@@ -140,20 +148,20 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
               correctionLevel: _correctionLevel,
               frameText: _frameText,
               onForegroundColorChanged: (color) {
-                setState(() => _foregroundColor = color);
+                _foregroundColor = color;
                 _generateQR();
               },
               onBackgroundColorChanged: (color) {
-                setState(() => _backgroundColor = color);
+                _backgroundColor = color;
                 _generateQR();
               },
               onCorrectionLevelChanged: (level) {
-                setState(() => _correctionLevel = level);
+                _correctionLevel = level;
                 _generateQR();
               },
               onFrameTextChanged: (text) {
-                setState(() => _frameText = text);
-                _generateQR();
+                _frameText = text;
+                _onFieldChanged();
               },
               onSave: _currentQR != null ? saveToHistory : null,
               isSaved: _isSaved,
