@@ -148,7 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ElevatedButton.icon(
             onPressed: () async {
               final keys = [urlKey, vcardKey, wifiKey, textKey];
-              final keyIndex = _selectedIndex > 3 ? _selectedIndex - 1 : _selectedIndex;
+              final keyIndex = _selectedIndex > 3
+                  ? _selectedIndex - 1
+                  : _selectedIndex;
               final key = keys[keyIndex];
               final state = key.currentState;
               if (state != null) {
@@ -315,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: RotatedBox(
                       quarterTurns: -1,
                       child: Text(
-                        'Zdyaksa Labs 2026',
+                        'Zdyaksa Labs',
                         style: TextStyle(
                           fontSize: 10,
                           color: Theme.of(
@@ -376,10 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         )
-                      : IndexedStack(
-                          index: _selectedIndex,
-                          children: _screens,
-                        ),
+                      : IndexedStack(index: _selectedIndex, children: _screens),
                 ),
               ],
             ),
