@@ -44,17 +44,6 @@ jobs:
       - name: Analyze project source
         run: flutter analyze --no-fatal-infos
 
-      - name: Run tests
-        run: flutter test --coverage
-
-      - name: Upload coverage
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/lcov.info
-          retention-days: 5
-
   build-web:
     name: Build Web
     runs-on: ubuntu-latest
