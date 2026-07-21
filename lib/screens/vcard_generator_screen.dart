@@ -115,8 +115,9 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
           children: [
             Text(
               'Contact Details',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -210,10 +211,11 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
           children: [
             Text(
               'Preview',
-              style: (compact
-                      ? Theme.of(context).textTheme.titleSmall
-                      : Theme.of(context).textTheme.titleMedium)
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style:
+                  (compact
+                          ? Theme.of(context).textTheme.titleSmall
+                          : Theme.of(context).textTheme.titleMedium)
+                      ?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: compact ? 8 : 16),
             Center(
@@ -241,13 +243,14 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
                                 Icon(
                                   Icons.qr_code_2,
                                   size: 64,
-                                  color: AppTheme.textSecondary
-                                      .withValues(alpha: 0.5),
+                                  color: AppTheme.textSecondary.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
-                                SizedBox(height: 8),
                                 Text(
                                   'Enter name to preview',
                                   style: TextStyle(
+                                    fontSize: 5,
                                     color: AppTheme.textSecondary,
                                   ),
                                 ),
@@ -281,7 +284,10 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -310,7 +316,10 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -372,11 +381,7 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
           Icon(icon, size: 16, color: AppTheme.primaryPurple),
           SizedBox(width: 8),
           Expanded(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
         ],
       ),
@@ -395,9 +400,9 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
             children: [
               Text(
                 'vCard Generator',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 8),
               Text(
@@ -433,7 +438,9 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
                                 children: [
                                   Text(
                                     'Contact Card Preview',
-                                    style: Theme.of(context).textTheme.titleSmall
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
                                         ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   SizedBox(height: 12),

@@ -90,8 +90,9 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
           children: [
             Text(
               'Enter Text',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -114,9 +115,7 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
                     '${_textController.text.length} / $_maxCharacters characters',
                     style: TextStyle(
                       fontSize: 12,
-                      color:
-                          _textController.text.length >
-                              _maxCharacters * 0.9
+                      color: _textController.text.length > _maxCharacters * 0.9
                           ? AppTheme.error
                           : AppTheme.textSecondary,
                     ),
@@ -173,10 +172,11 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
           children: [
             Text(
               'Preview',
-              style: (compact
-                      ? Theme.of(context).textTheme.titleSmall
-                      : Theme.of(context).textTheme.titleMedium)
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style:
+                  (compact
+                          ? Theme.of(context).textTheme.titleSmall
+                          : Theme.of(context).textTheme.titleMedium)
+                      ?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: compact ? 8 : 16),
             Center(
@@ -208,10 +208,10 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
                                     alpha: 0.5,
                                   ),
                                 ),
-                                SizedBox(height: 8),
                                 Text(
                                   'Enter text to preview',
                                   style: TextStyle(
+                                    fontSize: 5,
                                     color: AppTheme.textSecondary,
                                   ),
                                 ),
@@ -245,7 +245,10 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -274,7 +277,10 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -303,9 +309,9 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen> {
             children: [
               Text(
                 'Text Generator',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 8),
               Text(

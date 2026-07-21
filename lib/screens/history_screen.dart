@@ -45,7 +45,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       case QRType.wifi:
         return 2;
       case QRType.text:
-        return 3;
+        return 4;
     }
   }
 

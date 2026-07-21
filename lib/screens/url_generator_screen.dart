@@ -90,8 +90,9 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
           children: [
             Text(
               'Enter URL',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -109,10 +110,7 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
               title: Text('Dynamic Short Link'),
               subtitle: Text(
                 'Enable tracking and analytics',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppTheme.textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
               ),
               value: _isDynamicShortLink,
               onChanged: (value) {
@@ -161,10 +159,11 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
           children: [
             Text(
               'Preview',
-              style: (compact
-                      ? Theme.of(context).textTheme.titleSmall
-                      : Theme.of(context).textTheme.titleMedium)
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style:
+                  (compact
+                          ? Theme.of(context).textTheme.titleSmall
+                          : Theme.of(context).textTheme.titleMedium)
+                      ?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: compact ? 8 : 16),
             Center(
@@ -196,10 +195,10 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
                                     alpha: 0.5,
                                   ),
                                 ),
-                                SizedBox(height: 8),
                                 Text(
                                   'Enter a URL to preview',
                                   style: TextStyle(
+                                    fontSize: 5,
                                     color: AppTheme.textSecondary,
                                   ),
                                 ),
@@ -233,7 +232,10 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -262,7 +264,10 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -291,9 +296,9 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
             children: [
               Text(
                 'URL Generator',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 8),
               Text(

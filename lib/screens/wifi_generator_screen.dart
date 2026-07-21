@@ -108,8 +108,9 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
           children: [
             Text(
               'Network Details',
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -130,9 +131,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
                 prefixIcon: Icon(Icons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _obscurePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off,
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
                   ),
                   onPressed: () {
                     setState(() {
@@ -152,10 +151,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
                 prefixIcon: Icon(Icons.security),
               ),
               items: [
-                DropdownMenuItem(
-                  value: 'WPA',
-                  child: Text('WPA/WPA2'),
-                ),
+                DropdownMenuItem(value: 'WPA', child: Text('WPA/WPA2')),
                 DropdownMenuItem(value: 'WEP', child: Text('WEP')),
                 DropdownMenuItem(value: '', child: Text('None')),
               ],
@@ -171,10 +167,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
               title: Text('Hidden Network'),
               subtitle: Text(
                 'Enable if network SSID is hidden',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppTheme.textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
               ),
               value: _isHidden,
               onChanged: (value) {
@@ -223,10 +216,11 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
           children: [
             Text(
               'Preview',
-              style: (compact
-                      ? Theme.of(context).textTheme.titleSmall
-                      : Theme.of(context).textTheme.titleMedium)
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style:
+                  (compact
+                          ? Theme.of(context).textTheme.titleSmall
+                          : Theme.of(context).textTheme.titleMedium)
+                      ?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: compact ? 8 : 16),
             Center(
@@ -258,10 +252,11 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
                                     alpha: 0.5,
                                   ),
                                 ),
-                                SizedBox(height: 8),
+
                                 Text(
                                   'Enter SSID to preview',
                                   style: TextStyle(
+                                    fontSize: 5,
                                     color: AppTheme.textSecondary,
                                   ),
                                 ),
@@ -295,7 +290,10 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -324,7 +322,10 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              QrExportService.showSvgExportModal(context, _currentQR!);
+                              QrExportService.showSvgExportModal(
+                                context,
+                                _currentQR!,
+                              );
                             },
                             icon: Icon(Icons.code),
                             label: Text('SVG'),
@@ -353,9 +354,9 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
             children: [
               Text(
                 'Wi-Fi Generator',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 8),
               Text(
