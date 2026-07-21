@@ -8,6 +8,7 @@ import 'url_generator_screen.dart';
 import 'vcard_generator_screen.dart';
 import 'wifi_generator_screen.dart';
 import 'text_generator_screen.dart';
+import 'upload_screen.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int? _pendingTabIndex;
   int _selectedIndex = 0;
 
+  late final List<Widget> _screens;
+
   @override
   void dispose() {
     _connectivitySubscription?.cancel();
@@ -44,15 +47,24 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _screens = [
+      URLGeneratorScreen(key: urlKey),
+      VCardGeneratorScreen(key: vcardKey),
+      WiFiGeneratorScreen(key: wifiKey),
+      UploadScreen(onNavigateToTab: navigateToTabWithData),
+      TextGeneratorScreen(key: textKey),
+      HistoryScreen(onNavigateToTab: navigateToTabWithData),
+    ];
     _initConnectivity();
   }
 
   void navigateToTabWithData(int tabIndex, QRData data) {
     final keys = [urlKey, vcardKey, wifiKey, textKey];
-    if (tabIndex >= keys.length) return;
+    final keyIndex = tabIndex > 3 ? tabIndex - 1 : tabIndex;
+    if (keyIndex < 0 || keyIndex >= keys.length) return;
 
     _pendingData = data;
-    _pendingTabIndex = tabIndex;
+    _pendingTabIndex = keyIndex;
     setState(() => _selectedIndex = tabIndex);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -87,18 +99,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  List<Widget> get _screens => [
-    URLGeneratorScreen(key: urlKey),
-    VCardGeneratorScreen(key: vcardKey),
-    WiFiGeneratorScreen(key: wifiKey),
-    TextGeneratorScreen(key: textKey),
-    HistoryScreen(onNavigateToTab: navigateToTabWithData),
-  ];
-
   bool _hasUnsavedChanges() {
+    if (_selectedIndex == 3) return false;
     final keys = [urlKey, vcardKey, wifiKey, textKey];
-    if (_selectedIndex >= keys.length) return false;
-    final key = keys[_selectedIndex];
+    final keyIndex = _selectedIndex > 3 ? _selectedIndex - 1 : _selectedIndex;
+    if (keyIndex >= keys.length) return false;
+    final key = keys[keyIndex];
     final state = key.currentState;
     if (state == null) return false;
     return (state as dynamic).hasUnsavedChanges ?? false;
@@ -142,7 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ElevatedButton.icon(
             onPressed: () async {
               final keys = [urlKey, vcardKey, wifiKey, textKey];
-              final key = keys[_selectedIndex];
+              final keyIndex = _selectedIndex > 3 ? _selectedIndex - 1 : _selectedIndex;
+              final key = keys[keyIndex];
               final state = key.currentState;
               if (state != null) {
                 await (state as dynamic).saveToHistory();
@@ -285,6 +292,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: Text('Wi-Fi'),
                 ),
                 NavigationRailDestination(
+                  icon: Icon(Icons.upload_file_outlined),
+                  selectedIcon: Icon(Icons.upload_file),
+                  label: Text('Upload'),
+                ),
+                NavigationRailDestination(
                   icon: Icon(Icons.text_fields_outlined),
                   selectedIcon: Icon(Icons.text_fields),
                   label: Text('Text'),
@@ -353,7 +365,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: isDesktop
                       ? Stack(
                           children: [
-                            _screens[_selectedIndex],
+                            IndexedStack(
+                              index: _selectedIndex,
+                              children: _screens,
+                            ),
                             Positioned(
                               top: 24,
                               right: 24,
@@ -361,7 +376,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         )
-                      : _screens[_selectedIndex],
+                      : IndexedStack(
+                          index: _selectedIndex,
+                          children: _screens,
+                        ),
                 ),
               ],
             ),
@@ -390,6 +408,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icon(Icons.wifi_outlined),
                       selectedIcon: Icon(Icons.wifi),
                       label: 'Wi-Fi',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.upload_file_outlined),
+                      selectedIcon: Icon(Icons.upload_file),
+                      label: 'Upload',
                     ),
                     NavigationDestination(
                       icon: Icon(Icons.text_fields_outlined),
