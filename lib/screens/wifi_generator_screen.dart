@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/qr_data.dart';
 import '../theme/app_theme.dart';
@@ -24,6 +25,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
   int _backgroundColor = 0xFFFFFFFF;
   double _correctionLevel = 0.15;
   String? _frameText;
+  Timer? _debounce;
 
   WiFiQRData? _currentQR;
   bool _isSaved = false;
@@ -32,9 +34,15 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _ssidController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _onFieldChanged() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), _generateQR);
   }
 
   void _generateQR() {
@@ -120,7 +128,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
                 hintText: 'My WiFi Network',
                 prefixIcon: Icon(Icons.wifi),
               ),
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 12),
             TextFormField(
@@ -141,7 +149,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
                 ),
               ),
               obscureText: _obscurePassword,
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 12),
             DropdownButtonFormField<String>(
@@ -157,7 +165,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
               ],
               onChanged: (value) {
                 if (value != null) {
-                  setState(() => _encryptionType = value);
+                  _encryptionType = value;
                   _generateQR();
                 }
               },
@@ -171,7 +179,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
               ),
               value: _isHidden,
               onChanged: (value) {
-                setState(() => _isHidden = value);
+                _isHidden = value;
                 _generateQR();
               },
               activeThumbColor: AppTheme.primaryPurple,
@@ -184,20 +192,20 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen> {
               correctionLevel: _correctionLevel,
               frameText: _frameText,
               onForegroundColorChanged: (color) {
-                setState(() => _foregroundColor = color);
+                _foregroundColor = color;
                 _generateQR();
               },
               onBackgroundColorChanged: (color) {
-                setState(() => _backgroundColor = color);
+                _backgroundColor = color;
                 _generateQR();
               },
               onCorrectionLevelChanged: (level) {
-                setState(() => _correctionLevel = level);
+                _correctionLevel = level;
                 _generateQR();
               },
               onFrameTextChanged: (text) {
-                setState(() => _frameText = text);
-                _generateQR();
+                _frameText = text;
+                _onFieldChanged();
               },
               onSave: _currentQR != null ? saveToHistory : null,
               isSaved: _isSaved,

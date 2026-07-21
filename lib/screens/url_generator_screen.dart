@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/qr_data.dart';
 import '../theme/app_theme.dart';
@@ -20,6 +21,7 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
   int _backgroundColor = 0xFFFFFFFF;
   double _correctionLevel = 0.15;
   String? _frameText;
+  Timer? _debounce;
 
   URLQRData? _currentQR;
   bool _isSaved = false;
@@ -28,8 +30,14 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _urlController.dispose();
     super.dispose();
+  }
+
+  void _onFieldChanged() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), _generateQR);
   }
 
   void _generateQR() {
@@ -103,7 +111,7 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
                 prefixIcon: Icon(Icons.link),
               ),
               keyboardType: TextInputType.url,
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 16),
             SwitchListTile(
@@ -114,7 +122,7 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
               ),
               value: _isDynamicShortLink,
               onChanged: (value) {
-                setState(() => _isDynamicShortLink = value);
+                _isDynamicShortLink = value;
                 _generateQR();
               },
               activeThumbColor: AppTheme.primaryPurple,
@@ -127,20 +135,20 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen> {
               correctionLevel: _correctionLevel,
               frameText: _frameText,
               onForegroundColorChanged: (color) {
-                setState(() => _foregroundColor = color);
+                _foregroundColor = color;
                 _generateQR();
               },
               onBackgroundColorChanged: (color) {
-                setState(() => _backgroundColor = color);
+                _backgroundColor = color;
                 _generateQR();
               },
               onCorrectionLevelChanged: (level) {
-                setState(() => _correctionLevel = level);
+                _correctionLevel = level;
                 _generateQR();
               },
               onFrameTextChanged: (text) {
-                setState(() => _frameText = text);
-                _generateQR();
+                _frameText = text;
+                _onFieldChanged();
               },
               onSave: _currentQR != null ? saveToHistory : null,
               isSaved: _isSaved,
