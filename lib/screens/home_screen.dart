@@ -4,6 +4,7 @@ import '../models/qr_data.dart';
 import '../services/connectivity_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_messages.dart';
+import 'generators/generator_resettable.dart';
 import 'url_generator_screen.dart';
 import 'vcard_generator_screen.dart';
 import 'wifi_generator_screen.dart';
@@ -48,11 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _screens = [
+      TextGeneratorScreen(key: textKey),
       URLGeneratorScreen(key: urlKey),
       VCardGeneratorScreen(key: vcardKey),
       WiFiGeneratorScreen(key: wifiKey),
       UploadScreen(onNavigateToTab: navigateToTabWithData),
-      TextGeneratorScreen(key: textKey),
       HistoryScreen(onNavigateToTab: navigateToTabWithData),
     ];
     _initConnectivity();
@@ -72,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final key = keys[_pendingTabIndex!];
         final state = key.currentState;
         if (state != null) {
-          (state as dynamic).loadFromData(_pendingData!);
+          (state as GeneratorResettable).loadFromData(_pendingData!);
         }
         _pendingData = null;
         _pendingTabIndex = null;
@@ -99,15 +100,18 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  bool _hasUnsavedChanges() {
-    if (_selectedIndex == 3) return false;
+  GeneratorResettable? _currentGeneratorState() {
+    if (_selectedIndex == 3) return null;
     final keys = [urlKey, vcardKey, wifiKey, textKey];
     final keyIndex = _selectedIndex > 3 ? _selectedIndex - 1 : _selectedIndex;
-    if (keyIndex >= keys.length) return false;
-    final key = keys[keyIndex];
-    final state = key.currentState;
-    if (state == null) return false;
-    return (state as dynamic).hasUnsavedChanges ?? false;
+    if (keyIndex >= keys.length) return null;
+    final state = keys[keyIndex].currentState;
+    if (state == null) return null;
+    return state as GeneratorResettable;
+  }
+
+  bool _hasUnsavedChanges() {
+    return _currentGeneratorState()?.hasUnsavedChanges ?? false;
   }
 
   void _onTabChanged(int index) {
@@ -121,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showUnsavedChangesDialog(int newIndex) {
+    final generatorState = _currentGeneratorState();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -140,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           TextButton(
             onPressed: () {
+              generatorState?.reset();
               Navigator.pop(context);
               setState(() => _selectedIndex = newIndex);
             },
@@ -147,14 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ElevatedButton.icon(
             onPressed: () async {
-              final keys = [urlKey, vcardKey, wifiKey, textKey];
-              final keyIndex = _selectedIndex > 3
-                  ? _selectedIndex - 1
-                  : _selectedIndex;
-              final key = keys[keyIndex];
-              final state = key.currentState;
-              if (state != null) {
-                await (state as dynamic).saveToHistory();
+              if (generatorState != null) {
+                await generatorState.saveToHistory();
               }
               if (context.mounted) {
                 Navigator.pop(context);
@@ -279,6 +279,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               destinations: [
                 NavigationRailDestination(
+                  icon: Icon(Icons.text_fields_outlined),
+                  selectedIcon: Icon(Icons.text_fields),
+                  label: Text('Text'),
+                ),
+                NavigationRailDestination(
                   icon: Icon(Icons.link_outlined),
                   selectedIcon: Icon(Icons.link),
                   label: Text('URL'),
@@ -297,11 +302,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(Icons.upload_file_outlined),
                   selectedIcon: Icon(Icons.upload_file),
                   label: Text('Upload'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.text_fields_outlined),
-                  selectedIcon: Icon(Icons.text_fields),
-                  label: Text('Text'),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.history_outlined),
@@ -394,6 +394,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   onDestinationSelected: _onTabChanged,
                   destinations: [
                     NavigationDestination(
+                      icon: Icon(Icons.text_fields_outlined),
+                      selectedIcon: Icon(Icons.text_fields),
+                      label: 'Text',
+                    ),
+                    NavigationDestination(
                       icon: Icon(Icons.link_outlined),
                       selectedIcon: Icon(Icons.link),
                       label: 'URL',
@@ -412,11 +417,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icon(Icons.upload_file_outlined),
                       selectedIcon: Icon(Icons.upload_file),
                       label: 'Upload',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.text_fields_outlined),
-                      selectedIcon: Icon(Icons.text_fields),
-                      label: 'Text',
                     ),
                     NavigationDestination(
                       icon: Icon(Icons.history_outlined),
