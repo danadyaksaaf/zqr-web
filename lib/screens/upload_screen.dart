@@ -245,7 +245,9 @@ class _UploadScreenState extends State<UploadScreen> {
       onTap: _pickImage,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
+        width: double.infinity,
         height: 200,
+        padding: EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
@@ -257,6 +259,7 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
               Icons.cloud_upload_outlined,
@@ -504,7 +507,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 Center(
                   child: Column(
                     children: [
-                      CircularProgressIndicator(color: AppTheme.primaryPurple),
+                      _ThreeDotLoader(),
                       SizedBox(height: 12),
                       Text(
                         'Scanning QR code...',
@@ -533,6 +536,65 @@ class _UploadScreenState extends State<UploadScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ThreeDotLoader extends StatefulWidget {
+  const _ThreeDotLoader();
+
+  @override
+  State<_ThreeDotLoader> createState() => _ThreeDotLoaderState();
+}
+
+class _ThreeDotLoaderState extends State<_ThreeDotLoader>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (i) {
+            final start = i * 0.2;
+            final end = (start + 0.4).clamp(0.0, 1.0);
+            final value = Tween<double>(begin: 0.4, end: 1.0).transform(
+              CurvedAnimation(
+                parent: _controller,
+                curve: Interval(start, end, curve: Curves.easeInOut),
+              ).value,
+            );
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Transform.scale(
+                scale: value,
+                child: const CircleAvatar(
+                  radius: 5,
+                  backgroundColor: AppTheme.primaryPurple,
+                ),
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 }
