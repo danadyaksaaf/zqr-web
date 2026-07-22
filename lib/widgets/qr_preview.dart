@@ -16,11 +16,14 @@ class QRPreviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final foregroundColor = Color(qrData.foregroundColor);
     final backgroundColor = Color(qrData.backgroundColor);
-    final hasFrameText = qrData.frameText != null && qrData.frameText!.isNotEmpty;
+    final hasFrameText =
+        qrData.frameText != null && qrData.frameText!.isNotEmpty;
 
-    return AspectRatio(
-      aspectRatio: 1,
-      child: Container(
+    return FractionallySizedBox(
+      widthFactor: 0.88,
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
         padding: showFrame ? EdgeInsets.all(24) : null,
         decoration: showFrame
             ? BoxDecoration(
@@ -47,7 +50,7 @@ class QRPreviewWidget extends StatelessWidget {
               QrImageView(
                 data: qrData.content,
                 version: QrVersions.auto,
-                size: 200,
+                size: 100,
                 backgroundColor: backgroundColor,
                 eyeStyle: QrEyeStyle(
                   eyeShape: QrEyeShape.square,
@@ -67,7 +70,7 @@ class QRPreviewWidget extends StatelessWidget {
               if (hasFrameText) ...[
                 SizedBox(height: 8),
                 SizedBox(
-                  width: 200,
+                  width: 100,
                   child: Text(
                     qrData.frameText!,
                     textAlign: TextAlign.center,
@@ -86,6 +89,7 @@ class QRPreviewWidget extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }

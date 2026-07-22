@@ -19,10 +19,10 @@ class AppTheme {
   static const Color textSecondaryDark = Color(0xFF9E9E9E);
   static const Color dividerDark = Color(0xFF3A3A4A);
 
-  static late final TextTheme _cachedLightTextTheme =
-      GoogleFonts.dmSansTextTheme();
-  static late final TextTheme _cachedDarkTextTheme =
-      GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme);
+  static final TextTheme _cachedLightTextTheme = GoogleFonts.dmSansTextTheme();
+  static final TextTheme _cachedDarkTextTheme = GoogleFonts.dmSansTextTheme(
+    ThemeData.dark().textTheme,
+  );
 
   static ThemeData get lightTheme {
     return ThemeData(
