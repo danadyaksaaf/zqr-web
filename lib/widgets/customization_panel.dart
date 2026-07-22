@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../theme/app_theme.dart';
+import 'color_picker.dart';
 
 class CustomizationPanel extends StatelessWidget {
   final int foregroundColor;
@@ -43,18 +43,16 @@ class CustomizationPanel extends StatelessWidget {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 16),
-            _buildColorPicker(
-              context,
-              'Foreground Color',
-              foregroundColor,
-              onForegroundColorChanged,
+            QrColorPicker(
+              label: 'Foreground Color',
+              currentColor: foregroundColor,
+              onChanged: onForegroundColorChanged,
             ),
             SizedBox(height: 12),
-            _buildColorPicker(
-              context,
-              'Background Color',
-              backgroundColor,
-              onBackgroundColorChanged,
+            QrColorPicker(
+              label: 'Background Color',
+              currentColor: backgroundColor,
+              onChanged: onBackgroundColorChanged,
             ),
             SizedBox(height: 16),
             _buildCorrectionLevelSlider(context),
@@ -89,61 +87,6 @@ class CustomizationPanel extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildColorPicker(
-    BuildContext context,
-    String label,
-    int currentColor,
-    ValueChanged<int> onChanged,
-  ) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(label, style: TextStyle(fontWeight: FontWeight.w500)),
-        ),
-        GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text('Select $label'),
-                content: SingleChildScrollView(
-                  child: ColorPicker(
-                    pickerColor: Color(currentColor),
-                    onColorChanged: (color) {
-                      onChanged(color.toARGB32());
-                    },
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Done'),
-                  ),
-                ],
-              ),
-            );
-          },
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Color(currentColor),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppTheme.divider, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 

@@ -10,7 +10,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../models/qr_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_messages.dart';
-import 'connectivity_service.dart';
 
 class QrExportService {
   static int _errorCorrectionForLevel(double level) {
@@ -56,13 +55,6 @@ class QrExportService {
   }
 
   static Future<void> saveAsPng(BuildContext context, QRData qrData) async {
-    if (!await ConnectivityService().checkConnection()) {
-      if (context.mounted) {
-        AppMessages.showError(context, "You're offline. Please check your connection and try again.");
-      }
-      return;
-    }
-
     try {
       final painter = _buildPainter(qrData);
       const size = 900.0;
@@ -145,13 +137,6 @@ class QrExportService {
     BuildContext context,
     QRData qrData,
   ) async {
-    if (!await ConnectivityService().checkConnection()) {
-      if (context.mounted) {
-        AppMessages.showError(context, "You're offline. Please check your connection and try again.");
-      }
-      return;
-    }
-
     try {
       final svgString = _buildSvgString(qrData);
 

@@ -80,6 +80,21 @@ class QRData {
       frameText: frameText ?? this.frameText,
     );
   }
+
+  static QRType? detectType(String content) {
+    if (content.isEmpty) return null;
+
+    if (content.toUpperCase().startsWith('BEGIN:VCARD')) return QRType.vcard;
+    if (content.toUpperCase().startsWith('WIFI:')) return QRType.wifi;
+
+    final urlPattern = RegExp(
+      r'^(https?://|www\.)',
+      caseSensitive: false,
+    );
+    if (urlPattern.hasMatch(content)) return QRType.url;
+
+    return QRType.text;
+  }
 }
 
 class URLQRData extends QRData {

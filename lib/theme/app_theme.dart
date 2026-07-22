@@ -19,6 +19,11 @@ class AppTheme {
   static const Color textSecondaryDark = Color(0xFF9E9E9E);
   static const Color dividerDark = Color(0xFF3A3A4A);
 
+  static final TextTheme _cachedLightTextTheme = GoogleFonts.dmSansTextTheme();
+  static final TextTheme _cachedDarkTextTheme = GoogleFonts.dmSansTextTheme(
+    ThemeData.dark().textTheme,
+  );
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -26,7 +31,7 @@ class AppTheme {
         seedColor: primaryPurple,
         brightness: Brightness.light,
       ),
-      textTheme: GoogleFonts.dmSansTextTheme(),
+      textTheme: _cachedLightTextTheme,
       scaffoldBackgroundColor: backgroundLight,
       cardTheme: CardThemeData(
         elevation: 1,
@@ -62,11 +67,13 @@ class AppTheme {
         backgroundColor: surfaceWhite,
         selectedIconTheme: IconThemeData(color: primaryPurple),
         unselectedIconTheme: IconThemeData(color: textSecondary),
-        selectedLabelTextStyle: GoogleFonts.dmSans(
+        selectedLabelTextStyle: _cachedLightTextTheme.labelMedium?.copyWith(
           color: primaryPurple,
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelTextStyle: GoogleFonts.dmSans(color: textSecondary),
+        unselectedLabelTextStyle: _cachedLightTextTheme.labelMedium?.copyWith(
+          color: textSecondary,
+        ),
       ),
     );
   }
@@ -78,7 +85,7 @@ class AppTheme {
         seedColor: primaryPurple,
         brightness: Brightness.dark,
       ),
-      textTheme: GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme),
+      textTheme: _cachedDarkTextTheme,
       scaffoldBackgroundColor: backgroundDark,
       cardTheme: CardThemeData(
         elevation: 1,
@@ -114,11 +121,13 @@ class AppTheme {
         backgroundColor: surfaceDark,
         selectedIconTheme: IconThemeData(color: primaryPurpleLight),
         unselectedIconTheme: IconThemeData(color: textSecondaryDark),
-        selectedLabelTextStyle: GoogleFonts.dmSans(
+        selectedLabelTextStyle: _cachedDarkTextTheme.labelMedium?.copyWith(
           color: primaryPurpleLight,
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelTextStyle: GoogleFonts.dmSans(color: textSecondaryDark),
+        unselectedLabelTextStyle: _cachedDarkTextTheme.labelMedium?.copyWith(
+          color: textSecondaryDark,
+        ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surfaceDark,
