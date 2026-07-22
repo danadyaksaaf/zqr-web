@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/qr_data.dart';
-import '../theme/app_theme.dart';
-import '../services/history_service.dart';
-import '../services/qr_export_service.dart';
-import '../widgets/qr_preview.dart';
-import '../widgets/customization_panel.dart';
+import '../../models/qr_data.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/qr_preview_card.dart';
+import '../../widgets/customization_panel.dart';
+import 'generators/generator_resettable.dart';
+import 'generators/vcard_generator_state.dart';
 
 class VCardGeneratorScreen extends StatefulWidget {
   const VCardGeneratorScreen({super.key});
@@ -13,97 +13,34 @@ class VCardGeneratorScreen extends StatefulWidget {
   State<VCardGeneratorScreen> createState() => _VCardGeneratorScreenState();
 }
 
-class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
-  final _fullNameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _organizationController = TextEditingController();
-  final _websiteController = TextEditingController();
+class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
+    implements GeneratorResettable {
+  final _state = VCardGeneratorState();
 
-  int _foregroundColor = 0xFF212121;
-  int _backgroundColor = 0xFFFFFFFF;
-  double _correctionLevel = 0.15;
-  String? _frameText;
+  @override
+  bool get hasUnsavedChanges => _state.hasUnsavedChanges;
 
-  VCardQRData? _currentQR;
-  bool _isSaved = false;
+  @override
+  void reset() {
+    setState(() => _state.reset());
+  }
 
-  bool get hasUnsavedChanges => _currentQR != null && !_isSaved;
+  @override
+  void loadFromData(QRData data) {
+    setState(() => _state.loadFromData(data));
+  }
+
+  @override
+  Future<void> saveToHistory() => _state.saveToHistory(context);
 
   @override
   void dispose() {
-    _fullNameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    _organizationController.dispose();
-    _websiteController.dispose();
+    _state.dispose();
     super.dispose();
   }
 
-  void _generateQR() {
-    if (_fullNameController.text.isEmpty) return;
-    setState(() {
-      _isSaved = false;
-      _currentQR = VCardQRData(
-        fullName: _fullNameController.text,
-        phone: _phoneController.text,
-        email: _emailController.text,
-        organization: _organizationController.text,
-        website: _websiteController.text,
-        foregroundColor: _foregroundColor,
-        backgroundColor: _backgroundColor,
-        correctionLevel: _correctionLevel,
-        frameText: _frameText,
-      );
-    });
-  }
-
-  void loadFromData(QRData data) {
-    final fnMatch = RegExp(r'FN:(.+)').firstMatch(data.content);
-    final telMatch = RegExp(r'TEL:(.+)').firstMatch(data.content);
-    final emailMatch = RegExp(r'EMAIL:(.+)').firstMatch(data.content);
-    final orgMatch = RegExp(r'ORG:(.+)').firstMatch(data.content);
-    final urlMatch = RegExp(r'URL:(.+)').firstMatch(data.content);
-
-    _fullNameController.text = fnMatch?.group(1) ?? '';
-    _phoneController.text = telMatch?.group(1) ?? '';
-    _emailController.text = emailMatch?.group(1) ?? '';
-    _organizationController.text = orgMatch?.group(1) ?? '';
-    _websiteController.text = urlMatch?.group(1) ?? '';
-    _foregroundColor = data.foregroundColor;
-    _backgroundColor = data.backgroundColor;
-    _correctionLevel = data.correctionLevel;
-    _frameText = data.frameText;
-    setState(() {
-      _isSaved = true;
-      _currentQR = VCardQRData(
-        fullName: _fullNameController.text,
-        phone: _phoneController.text,
-        email: _emailController.text,
-        organization: _organizationController.text,
-        website: _websiteController.text,
-        foregroundColor: data.foregroundColor,
-        backgroundColor: data.backgroundColor,
-        correctionLevel: data.correctionLevel,
-        frameText: data.frameText,
-      );
-    });
-  }
-
-  Future<void> saveToHistory() async {
-    if (_currentQR == null) return;
-    await HistoryService().addItem(_currentQR!);
-    setState(() => _isSaved = true);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('QR code saved to history'),
-          backgroundColor: AppTheme.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
-    }
+  void _onFieldChanged() {
+    setState(() => _state.generateQR());
   }
 
   Widget _buildInputCard() {
@@ -121,215 +58,82 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
             ),
             SizedBox(height: 16),
             TextFormField(
-              controller: _fullNameController,
+              controller: _state.fullNameController,
               decoration: InputDecoration(
                 labelText: 'Full Name *',
                 hintText: 'John Doe',
                 prefixIcon: Icon(Icons.person),
               ),
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 12),
             TextFormField(
-              controller: _phoneController,
+              controller: _state.phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone',
                 hintText: '+1 234 567 890',
                 prefixIcon: Icon(Icons.phone),
               ),
               keyboardType: TextInputType.phone,
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 12),
             TextFormField(
-              controller: _emailController,
+              controller: _state.emailController,
               decoration: InputDecoration(
                 labelText: 'Email',
                 hintText: 'john@example.com',
                 prefixIcon: Icon(Icons.email),
               ),
               keyboardType: TextInputType.emailAddress,
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 12),
             TextFormField(
-              controller: _organizationController,
+              controller: _state.organizationController,
               decoration: InputDecoration(
                 labelText: 'Organization',
                 hintText: 'Company Name',
                 prefixIcon: Icon(Icons.business),
               ),
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 12),
             TextFormField(
-              controller: _websiteController,
+              controller: _state.websiteController,
               decoration: InputDecoration(
                 labelText: 'Website',
                 hintText: 'https://example.com',
                 prefixIcon: Icon(Icons.language),
               ),
               keyboardType: TextInputType.url,
-              onChanged: (_) => _generateQR(),
+              onChanged: (_) => _onFieldChanged(),
             ),
             SizedBox(height: 24),
             CustomizationPanel(
-              foregroundColor: _foregroundColor,
-              backgroundColor: _backgroundColor,
-              correctionLevel: _correctionLevel,
-              frameText: _frameText,
+              foregroundColor: _state.foregroundColor,
+              backgroundColor: _state.backgroundColor,
+              correctionLevel: _state.correctionLevel,
+              frameText: _state.frameText,
               onForegroundColorChanged: (color) {
-                setState(() => _foregroundColor = color);
-                _generateQR();
+                setState(() => _state.foregroundColor = color);
+                setState(() => _state.generateQR());
               },
               onBackgroundColorChanged: (color) {
-                setState(() => _backgroundColor = color);
-                _generateQR();
+                setState(() => _state.backgroundColor = color);
+                setState(() => _state.generateQR());
               },
               onCorrectionLevelChanged: (level) {
-                setState(() => _correctionLevel = level);
-                _generateQR();
+                setState(() => _state.correctionLevel = level);
+                setState(() => _state.generateQR());
               },
               onFrameTextChanged: (text) {
-                setState(() => _frameText = text);
-                _generateQR();
+                setState(() => _state.frameText = text);
+                _onFieldChanged();
               },
-              onSave: _currentQR != null ? saveToHistory : null,
-              isSaved: _isSaved,
+              onSave: _state.currentQR != null ? saveToHistory : null,
+              isSaved: _state.isSaved,
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPreviewCard({bool compact = false}) {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(compact ? 12 : 24),
-        child: Column(
-          children: [
-            Text(
-              'Preview',
-              style:
-                  (compact
-                          ? Theme.of(context).textTheme.titleSmall
-                          : Theme.of(context).textTheme.titleMedium)
-                      ?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: compact ? 8 : 16),
-            Center(
-              child: SizedBox(
-                width: compact ? 140 : null,
-                height: compact ? 140 : null,
-                child: _currentQR != null
-                    ? QRPreviewWidget(qrData: _currentQR!)
-                    : AspectRatio(
-                        aspectRatio: 1,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppTheme.backgroundLight,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: AppTheme.divider,
-                              width: 2,
-                            ),
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.qr_code_2,
-                                  size: 64,
-                                  color: AppTheme.textSecondary.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                                Text(
-                                  'Enter name to preview',
-                                  style: TextStyle(
-                                    fontSize: 5,
-                                    color: AppTheme.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-              ),
-            ),
-            SizedBox(height: compact ? 8 : 16),
-            if (_currentQR != null)
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final stacked = constraints.maxWidth < 200;
-                  if (stacked) {
-                    return Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              QrExportService.saveAsPng(context, _currentQR!);
-                            },
-                            icon: Icon(Icons.download),
-                            label: Text('PNG'),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              QrExportService.showSvgExportModal(
-                                context,
-                                _currentQR!,
-                              );
-                            },
-                            icon: Icon(Icons.code),
-                            label: Text('SVG'),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return Row(
-                    children: [
-                      Flexible(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              QrExportService.saveAsPng(context, _currentQR!);
-                            },
-                            icon: Icon(Icons.download),
-                            label: Text('PNG'),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Flexible(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              QrExportService.showSvgExportModal(
-                                context,
-                                _currentQR!,
-                              );
-                            },
-                            icon: Icon(Icons.code),
-                            label: Text('SVG'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
           ],
         ),
       ),
@@ -338,6 +142,7 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
 
   Widget _buildContactCard() {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -347,27 +152,27 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_fullNameController.text.isNotEmpty)
+          if (_state.fullNameController.text.isNotEmpty)
             Text(
-              _fullNameController.text,
+              _state.fullNameController.text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          if (_organizationController.text.isNotEmpty)
+          if (_state.organizationController.text.isNotEmpty)
             Text(
-              _organizationController.text,
+              _state.organizationController.text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(color: AppTheme.textSecondary),
             ),
           Divider(height: 24),
-          if (_phoneController.text.isNotEmpty)
-            _buildContactRow(Icons.phone, _phoneController.text),
-          if (_emailController.text.isNotEmpty)
-            _buildContactRow(Icons.email, _emailController.text),
-          if (_websiteController.text.isNotEmpty)
-            _buildContactRow(Icons.language, _websiteController.text),
+          if (_state.phoneController.text.isNotEmpty)
+            _buildContactRow(Icons.phone, _state.phoneController.text),
+          if (_state.emailController.text.isNotEmpty)
+            _buildContactRow(Icons.email, _state.emailController.text),
+          if (_state.websiteController.text.isNotEmpty)
+            _buildContactRow(Icons.language, _state.websiteController.text),
         ],
       ),
     );
@@ -413,7 +218,11 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
               if (stacked)
                 Column(
                   children: [
-                    _buildPreviewCard(compact: true),
+                    QrPreviewCard(
+                      currentQR: _state.currentQR,
+                      emptyHint: 'Enter name to preview',
+                      compact: true,
+                    ),
                     SizedBox(height: 16),
                     _buildInputCard(),
                   ],
@@ -428,7 +237,10 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
                       flex: 1,
                       child: Column(
                         children: [
-                          _buildPreviewCard(),
+                          QrPreviewCard(
+                            currentQR: _state.currentQR,
+                            emptyHint: 'Enter name to preview',
+                          ),
                           SizedBox(height: 16),
                           Card(
                             child: Padding(
@@ -441,10 +253,13 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall
-                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                   ),
                                   SizedBox(height: 12),
-                                  if (_fullNameController.text.isNotEmpty)
+                                  if (_state
+                                      .fullNameController.text.isNotEmpty)
                                     _buildContactCard()
                                   else
                                     Text(
