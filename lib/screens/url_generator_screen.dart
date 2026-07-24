@@ -33,7 +33,10 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen>
   }
 
   @override
-  Future<void> saveToHistory() => _state.saveToHistory(context);
+  Future<void> saveToHistory() async {
+    await _state.saveToHistory(context);
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
@@ -44,9 +47,14 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen>
 
   void _onFieldChanged() {
     _debounce?.cancel();
+    _state.isSaved = false;
     _debounce = Timer(
       const Duration(milliseconds: 300),
-      () => setState(() => _state.generateQR()),
+      () {
+        final wasSaved = _state.isSaved;
+        setState(() => _state.generateQR());
+        if (wasSaved) _state.isSaved = true;
+      },
     );
   }
 

@@ -34,8 +34,8 @@ class QrPreviewCard extends StatelessWidget {
             SizedBox(height: compact ? 8 : 16),
             Center(
               child: SizedBox(
-                width: compact ? 154 : null,
-                height: compact ? 154 : null,
+                width: compact ? 154 : 240,
+                height: compact ? 154 : 240,
                 child: currentQR != null
                     ? QRPreviewWidget(qrData: currentQR!)
                     : AspectRatio(

@@ -428,20 +428,26 @@ class _UploadScreenState extends State<UploadScreen> {
       children: [
         if (_state != _UploadState.empty && _state != _UploadState.scanning)
           Expanded(
-            child: OutlinedButton.icon(
-              onPressed: _clearAll,
-              icon: Icon(Icons.refresh, size: 18),
-              label: Text('Clear'),
+            child: SizedBox(
+              height: 80,
+              child: OutlinedButton.icon(
+                onPressed: _clearAll,
+                icon: Icon(Icons.refresh, size: 18),
+                label: Text('Clear'),
+              ),
             ),
           ),
         if (_state != _UploadState.empty && _state != _UploadState.scanning)
           SizedBox(width: 12),
         if (_state != _UploadState.empty && _state != _UploadState.scanning)
           Expanded(
-            child: ElevatedButton.icon(
-              onPressed: hasImage ? _scanQR : null,
-              icon: Icon(Icons.qr_code_scanner, size: 18),
-              label: Text('Scan & Edit'),
+            child: SizedBox(
+              height: 80,
+              child: ElevatedButton.icon(
+                onPressed: hasImage ? _scanQR : null,
+                icon: Icon(Icons.qr_code_scanner, size: 18),
+                label: Text('Scan & Edit'),
+              ),
             ),
           ),
       ],

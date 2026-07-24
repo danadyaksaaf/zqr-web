@@ -67,8 +67,8 @@ class WiFiGeneratorState {
 
   Future<void> saveToHistory(BuildContext context) async {
     if (currentQR == null) return;
-    await HistoryService().addItem(currentQR!);
     isSaved = true;
+    await HistoryService().addItem(currentQR!);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
