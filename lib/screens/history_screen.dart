@@ -165,9 +165,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     children: [
                       Text(
                         'History',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8),
                       Text(
@@ -224,7 +223,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           Icon(
                             Icons.history,
                             size: 64,
-                            color: AppTheme.textSecondary.withValues(alpha: 0.5),
+                            color: AppTheme.textSecondary.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
                           SizedBox(height: 16),
                           Text(
@@ -241,16 +242,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                   ),
                 )
-              : ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  itemCount: _filteredHistory.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 16),
-                      child: SizedBox(
-                        height: 260,
-                        child: _buildHistoryCard(_filteredHistory[index]),
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = (constraints.maxWidth / 200)
+                        .floor()
+                        .clamp(2, 10);
+                    return GridView.builder(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
                       ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        childAspectRatio: 1.0,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                      ),
+                      itemCount: _filteredHistory.length,
+                      itemBuilder: (context, index) {
+                        return _buildHistoryCard(_filteredHistory[index]);
+                      },
                     );
                   },
                 ),
@@ -281,7 +292,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: Padding(
-          padding: EdgeInsets.all(12),
+          padding: EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -349,7 +360,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           children: [
                             Icon(Icons.delete, color: AppTheme.error, size: 20),
                             SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: AppTheme.error)),
+                            Text(
+                              'Delete',
+                              style: TextStyle(color: AppTheme.error),
+                            ),
                           ],
                         ),
                       ),
@@ -379,10 +393,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: SizedBox(
                     width: 80,
                     height: 80,
-                    child: QRPreviewWidget(
-                      qrData: item,
-                      showFrame: false,
-                    ),
+                    child: QRPreviewWidget(qrData: item, showFrame: false),
                   ),
                 ),
               ),
