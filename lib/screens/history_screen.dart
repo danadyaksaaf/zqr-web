@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/qr_data.dart';
 import '../theme/app_theme.dart';
@@ -18,17 +19,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
   final HistoryService _historyService = HistoryService();
   List<QRData> _history = [];
   String _filterType = 'all';
+  StreamSubscription<List<QRData>>? _historySubscription;
 
   @override
   void initState() {
     super.initState();
-    _loadHistory();
+    _history = _historyService.history;
+    _historySubscription = _historyService.historyStream.listen((data) {
+      if (mounted) {
+        setState(() => _history = data);
+      }
+    });
   }
 
-  void _loadHistory() {
-    setState(() {
-      _history = _historyService.history;
-    });
+  @override
+  void dispose() {
+    _historySubscription?.cancel();
+    super.dispose();
   }
 
   List<QRData> get _filteredHistory {
@@ -67,7 +74,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
           TextButton(
             onPressed: () async {
               await _historyService.removeItem(id);
-              _loadHistory();
               if (mounted) Navigator.pop(this.context);
             },
             child: Text('Delete', style: TextStyle(color: AppTheme.error)),
@@ -91,7 +97,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
           TextButton(
             onPressed: () async {
               await _historyService.clear();
-              _loadHistory();
               if (mounted) Navigator.pop(this.context);
             },
             child: Text('Clear All', style: TextStyle(color: AppTheme.error)),

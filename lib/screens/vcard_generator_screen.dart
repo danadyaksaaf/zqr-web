@@ -31,7 +31,10 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
   }
 
   @override
-  Future<void> saveToHistory() => _state.saveToHistory(context);
+  Future<void> saveToHistory() async {
+    await _state.saveToHistory(context);
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
