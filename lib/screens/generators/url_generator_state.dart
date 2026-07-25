@@ -31,13 +31,13 @@ class URLGeneratorState {
     isSaved = false;
   }
 
-  void loadFromData(QRData data) {
+  void loadFromData(QRData data, {bool markAsSaved = true}) {
     urlController.text = data.content;
     foregroundColor = data.foregroundColor;
     backgroundColor = data.backgroundColor;
     correctionLevel = data.correctionLevel;
     frameText = data.frameText;
-    isSaved = true;
+    isSaved = markAsSaved;
     currentQR = URLQRData(
       url: data.content,
       foregroundColor: data.foregroundColor,

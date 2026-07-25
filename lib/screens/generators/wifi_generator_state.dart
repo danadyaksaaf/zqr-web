@@ -38,7 +38,7 @@ class WiFiGeneratorState {
     isSaved = false;
   }
 
-  void loadFromData(QRData data) {
+  void loadFromData(QRData data, {bool markAsSaved = true}) {
     final ssidMatch = RegExp(r'S:([^;]+)').firstMatch(data.content);
     final passMatch = RegExp(r'P:([^;]+)').firstMatch(data.content);
     final typeMatch = RegExp(r'T:([^;]+)').firstMatch(data.content);
@@ -52,7 +52,7 @@ class WiFiGeneratorState {
     backgroundColor = data.backgroundColor;
     correctionLevel = data.correctionLevel;
     frameText = data.frameText;
-    isSaved = true;
+    isSaved = markAsSaved;
     currentQR = WiFiQRData(
       ssid: ssidController.text,
       password: passwordController.text,

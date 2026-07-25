@@ -15,7 +15,7 @@ enum _UploadState { empty, imageSelected, scanning, decoded, error }
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key, required this.onNavigateToTab});
 
-  final void Function(int tabIndex, QRData data) onNavigateToTab;
+  final void Function(int tabIndex, QRData data, {bool markAsSaved}) onNavigateToTab;
 
   @override
   State<UploadScreen> createState() => _UploadScreenState();
@@ -198,7 +198,7 @@ class _UploadScreenState extends State<UploadScreen> {
       return;
     }
 
-    widget.onNavigateToTab(tabIndex, data);
+    widget.onNavigateToTab(tabIndex, data, markAsSaved: false);
   }
 
   int? _getTabIndex(QRType type) {

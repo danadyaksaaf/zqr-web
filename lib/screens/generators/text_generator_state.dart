@@ -30,13 +30,13 @@ class TextGeneratorState {
     isSaved = false;
   }
 
-  void loadFromData(QRData data) {
+  void loadFromData(QRData data, {bool markAsSaved = true}) {
     textController.text = data.content;
     foregroundColor = data.foregroundColor;
     backgroundColor = data.backgroundColor;
     correctionLevel = data.correctionLevel;
     frameText = data.frameText;
-    isSaved = true;
+    isSaved = markAsSaved;
     currentQR = TextQRData(
       text: data.content,
       foregroundColor: data.foregroundColor,

@@ -7,7 +7,7 @@ import '../services/qr_export_service.dart';
 import '../widgets/qr_preview.dart';
 
 class HistoryScreen extends StatefulWidget {
-  final void Function(int tabIndex, QRData data) onNavigateToTab;
+  final void Function(int tabIndex, QRData data, {bool markAsSaved}) onNavigateToTab;
 
   const HistoryScreen({super.key, required this.onNavigateToTab});
 

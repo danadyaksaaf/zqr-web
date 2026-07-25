@@ -35,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<bool>? _connectivitySubscription;
   QRData? _pendingData;
   int? _pendingTabIndex;
+  bool _pendingMarkAsSaved = true;
   int _selectedIndex = 0;
 
   late final List<Widget> _screens;
@@ -59,12 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
     _initConnectivity();
   }
 
-  void navigateToTabWithData(int tabIndex, QRData data) {
+  void navigateToTabWithData(int tabIndex, QRData data, {bool markAsSaved = true}) {
     final keys = [textKey, urlKey, vcardKey, wifiKey];
     if (tabIndex < 0 || tabIndex >= keys.length) return;
 
     _pendingData = data;
     _pendingTabIndex = tabIndex;
+    _pendingMarkAsSaved = markAsSaved;
     setState(() => _selectedIndex = tabIndex);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -72,10 +74,14 @@ class _HomeScreenState extends State<HomeScreen> {
         final key = keys[_pendingTabIndex!];
         final state = key.currentState;
         if (state != null) {
-          (state as GeneratorResettable).loadFromData(_pendingData!);
+          (state as GeneratorResettable).loadFromData(
+            _pendingData!,
+            markAsSaved: _pendingMarkAsSaved,
+          );
         }
         _pendingData = null;
         _pendingTabIndex = null;
+        _pendingMarkAsSaved = true;
       }
     });
   }
