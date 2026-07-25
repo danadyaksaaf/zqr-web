@@ -58,13 +58,42 @@ class QrExportService {
     try {
       final painter = _buildPainter(qrData);
       const size = 900.0;
+      final hasFrameText =
+          qrData.frameText != null && qrData.frameText!.isNotEmpty;
+      final canvasHeight = hasFrameText ? 1000.0 : size;
 
       final recorder = ui.PictureRecorder();
       final canvas = Canvas(recorder);
       canvas.drawColor(Color(qrData.backgroundColor), BlendMode.src);
       painter.paint(canvas, const Size(size, size));
+
+      if (hasFrameText) {
+        final textPainter = TextPainter(
+          text: TextSpan(
+            text: qrData.frameText,
+            style: TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.w600,
+              color: Color(qrData.foregroundColor),
+              letterSpacing: 1.5,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          ellipsis: '...',
+        );
+        textPainter.layout(maxWidth: size);
+        final textY = size + (canvasHeight - size - textPainter.height) / 2;
+        textPainter.paint(
+          canvas,
+          Offset((size - textPainter.width) / 2, textY),
+        );
+      }
+
       final picture = recorder.endRecording();
-      final image = await picture.toImage(size.toInt(), size.toInt());
+      final image =
+          await picture.toImage(size.toInt(), canvasHeight.toInt());
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
       if (byteData == null) {
@@ -97,6 +126,9 @@ class QrExportService {
     final moduleCount = qrImage.moduleCount;
     const viewBoxSize = 400;
     final moduleSize = viewBoxSize / moduleCount;
+    final hasFrameText =
+        qrData.frameText != null && qrData.frameText!.isNotEmpty;
+    final viewBoxHeight = hasFrameText ? 460 : viewBoxSize;
 
     final fg = _colorToHex(Color(qrData.foregroundColor));
     final bg = _colorToHex(Color(qrData.backgroundColor));
@@ -105,11 +137,11 @@ class QrExportService {
       ..writeln('<?xml version="1.0" encoding="UTF-8"?>')
       ..writeln(
         '<svg xmlns="http://www.w3.org/2000/svg" '
-        'viewBox="0 0 $viewBoxSize $viewBoxSize" '
+        'viewBox="0 0 $viewBoxSize $viewBoxHeight" '
         'shape-rendering="crispEdges">',
       )
       ..writeln(
-        '  <rect width="$viewBoxSize" height="$viewBoxSize" fill="$bg"/>',
+        '  <rect width="$viewBoxSize" height="$viewBoxHeight" fill="$bg"/>',
       );
 
     for (var row = 0; row < moduleCount; row++) {
@@ -125,12 +157,32 @@ class QrExportService {
       }
     }
 
+    if (hasFrameText) {
+      final textY = viewBoxSize + 40;
+      buffer.writeln(
+        '  <text x="${viewBoxSize / 2}" y="$textY" '
+        'text-anchor="middle" font-family="sans-serif" '
+        'font-size="22" font-weight="600" '
+        'letter-spacing="1" fill="$fg">'
+        '${_escapeXml(qrData.frameText!)}</text>',
+      );
+    }
+
     buffer.writeln('</svg>');
     return buffer.toString();
   }
 
   static String _colorToHex(Color color) {
     return '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
+  }
+
+  static String _escapeXml(String text) {
+    return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&apos;');
   }
 
   static Future<void> showSvgExportModal(
