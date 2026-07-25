@@ -15,7 +15,7 @@ enum _UploadState { empty, imageSelected, scanning, decoded, error }
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key, required this.onNavigateToTab});
 
-  final void Function(int tabIndex, QRData data) onNavigateToTab;
+  final void Function(int tabIndex, QRData data, {bool markAsSaved}) onNavigateToTab;
 
   @override
   State<UploadScreen> createState() => _UploadScreenState();
@@ -198,19 +198,19 @@ class _UploadScreenState extends State<UploadScreen> {
       return;
     }
 
-    widget.onNavigateToTab(tabIndex, data);
+    widget.onNavigateToTab(tabIndex, data, markAsSaved: false);
   }
 
   int? _getTabIndex(QRType type) {
     switch (type) {
-      case QRType.url:
-        return 0;
-      case QRType.vcard:
-        return 1;
-      case QRType.wifi:
-        return 2;
       case QRType.text:
-        return 4;
+        return 0;
+      case QRType.url:
+        return 1;
+      case QRType.vcard:
+        return 2;
+      case QRType.wifi:
+        return 3;
     }
   }
 
@@ -388,6 +388,7 @@ class _UploadScreenState extends State<UploadScreen> {
           SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
+            height: 50,
             child: ElevatedButton.icon(
               onPressed: _editQR,
               icon: Icon(Icons.edit, size: 18),
@@ -429,7 +430,7 @@ class _UploadScreenState extends State<UploadScreen> {
         if (_state != _UploadState.empty && _state != _UploadState.scanning)
           Expanded(
             child: SizedBox(
-              height: 80,
+              height: 50,
               child: OutlinedButton.icon(
                 onPressed: _clearAll,
                 icon: Icon(Icons.refresh, size: 18),
@@ -442,7 +443,7 @@ class _UploadScreenState extends State<UploadScreen> {
         if (_state != _UploadState.empty && _state != _UploadState.scanning)
           Expanded(
             child: SizedBox(
-              height: 80,
+              height: 50,
               child: ElevatedButton.icon(
                 onPressed: hasImage ? _scanQR : null,
                 icon: Icon(Icons.qr_code_scanner, size: 18),

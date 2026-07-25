@@ -38,7 +38,7 @@ class VCardGeneratorState {
     isSaved = false;
   }
 
-  void loadFromData(QRData data) {
+  void loadFromData(QRData data, {bool markAsSaved = true}) {
     final fnMatch = RegExp(r'FN:(.+)').firstMatch(data.content);
     final telMatch = RegExp(r'TEL:(.+)').firstMatch(data.content);
     final emailMatch = RegExp(r'EMAIL:(.+)').firstMatch(data.content);
@@ -54,7 +54,7 @@ class VCardGeneratorState {
     backgroundColor = data.backgroundColor;
     correctionLevel = data.correctionLevel;
     frameText = data.frameText;
-    isSaved = true;
+    isSaved = markAsSaved;
     currentQR = VCardQRData(
       fullName: fullNameController.text,
       phone: phoneController.text,

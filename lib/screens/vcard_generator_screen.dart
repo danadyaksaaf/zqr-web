@@ -26,8 +26,8 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
   }
 
   @override
-  void loadFromData(QRData data) {
-    setState(() => _state.loadFromData(data));
+  void loadFromData(QRData data, {bool markAsSaved = true}) {
+    setState(() => _state.loadFromData(data, markAsSaved: markAsSaved));
   }
 
   @override
