@@ -60,12 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void navigateToTabWithData(int tabIndex, QRData data) {
-    final keys = [urlKey, vcardKey, wifiKey, textKey];
-    final keyIndex = tabIndex > 3 ? tabIndex - 1 : tabIndex;
-    if (keyIndex < 0 || keyIndex >= keys.length) return;
+    final keys = [textKey, urlKey, vcardKey, wifiKey];
+    if (tabIndex < 0 || tabIndex >= keys.length) return;
 
     _pendingData = data;
-    _pendingTabIndex = keyIndex;
+    _pendingTabIndex = tabIndex;
     setState(() => _selectedIndex = tabIndex);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -101,11 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   GeneratorResettable? _currentGeneratorState() {
-    if (_selectedIndex == 3) return null;
-    final keys = [urlKey, vcardKey, wifiKey, textKey];
-    final keyIndex = _selectedIndex > 3 ? _selectedIndex - 1 : _selectedIndex;
-    if (keyIndex >= keys.length) return null;
-    final state = keys[keyIndex].currentState;
+    final keys = [textKey, urlKey, vcardKey, wifiKey];
+    if (_selectedIndex < 0 || _selectedIndex >= keys.length) return null;
+    final state = keys[_selectedIndex].currentState;
     if (state == null) return null;
     return state as GeneratorResettable;
   }

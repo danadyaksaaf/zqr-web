@@ -45,14 +45,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   int _tabIndexForType(QRType type) {
     switch (type) {
-      case QRType.url:
-        return 0;
-      case QRType.vcard:
-        return 1;
-      case QRType.wifi:
-        return 2;
       case QRType.text:
-        return 4;
+        return 0;
+      case QRType.url:
+        return 1;
+      case QRType.vcard:
+        return 2;
+      case QRType.wifi:
+        return 3;
     }
   }
 
