@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/qr_data.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/qr_preview_card.dart';
 import '../../widgets/customization_panel.dart';
+import '../../widgets/qr_preview_card.dart';
 import 'generators/generator_resettable.dart';
 import 'generators/vcard_generator_state.dart';
 
@@ -16,6 +17,7 @@ class VCardGeneratorScreen extends StatefulWidget {
 class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
     implements GeneratorResettable {
   final _state = VCardGeneratorState();
+  Timer? _debounce;
 
   @override
   bool get hasUnsavedChanges => _state.hasUnsavedChanges;
@@ -38,12 +40,18 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _state.dispose();
     super.dispose();
   }
 
   void _onFieldChanged() {
-    setState(() => _state.generateQR());
+    _debounce?.cancel();
+    _state.isSaved = false;
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () => setState(() => _state.generateQR()),
+    );
   }
 
   Widget _buildInputCard() {
@@ -119,16 +127,22 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
               correctionLevel: _state.correctionLevel,
               frameText: _state.frameText,
               onForegroundColorChanged: (color) {
-                setState(() => _state.foregroundColor = color);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.foregroundColor = color;
+                  _state.generateQR();
+                });
               },
               onBackgroundColorChanged: (color) {
-                setState(() => _state.backgroundColor = color);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.backgroundColor = color;
+                  _state.generateQR();
+                });
               },
               onCorrectionLevelChanged: (level) {
-                setState(() => _state.correctionLevel = level);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.correctionLevel = level;
+                  _state.generateQR();
+                });
               },
               onFrameTextChanged: (text) {
                 setState(() => _state.frameText = text);
