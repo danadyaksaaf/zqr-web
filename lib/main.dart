@@ -24,18 +24,24 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool(_themeKey) ?? false;
   final isConnected = await _checkConnectivity();
-  await HistoryService().init();
-  runApp(MainApp(initialDarkMode: isDark, initialConnected: isConnected));
+  await HistoryService().init(prefs);
+  runApp(MainApp(
+    initialDarkMode: isDark,
+    initialConnected: isConnected,
+    prefs: prefs,
+  ));
 }
 
 class MainApp extends StatefulWidget {
   final bool initialDarkMode;
   final bool initialConnected;
+  final SharedPreferences? prefs;
 
   const MainApp({
     super.key,
     required this.initialDarkMode,
     required this.initialConnected,
+    this.prefs,
   });
 
   @override
@@ -50,9 +56,7 @@ class _MainAppState extends State<MainApp> {
     setState(() {
       _isDarkMode = !_isDarkMode;
     });
-    SharedPreferences.getInstance().then(
-      (prefs) => prefs.setBool(_themeKey, _isDarkMode),
-    );
+    widget.prefs?.setBool(_themeKey, _isDarkMode);
   }
 
   Future<void> _retryConnection() async {
