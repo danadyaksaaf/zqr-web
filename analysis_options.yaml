@@ -12,6 +12,7 @@ analyzer:
 
 linter:
   rules:
+    - annotate_overrides
     - avoid_print
     - prefer_const_constructors
     - prefer_const_declarations

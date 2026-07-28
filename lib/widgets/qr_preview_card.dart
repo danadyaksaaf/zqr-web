@@ -5,16 +5,16 @@ import '../services/qr_export_service.dart';
 import 'qr_preview.dart';
 
 class QrPreviewCard extends StatelessWidget {
-  final QRData? currentQR;
-  final String emptyHint;
-  final bool compact;
-
   const QrPreviewCard({
     super.key,
     this.currentQR,
     required this.emptyHint,
     this.compact = false,
   });
+
+  final QRData? currentQR;
+  final String emptyHint;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class QrPreviewCard extends StatelessWidget {
                                 ),
                                 Text(
                                   emptyHint,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 5,
                                     color: AppTheme.textSecondary,
                                   ),
@@ -89,11 +89,11 @@ class QrPreviewCard extends StatelessWidget {
                             onPressed: () {
                               QrExportService.saveAsPng(context, currentQR!);
                             },
-                            icon: Icon(Icons.download),
-                            label: Text('PNG'),
+                            icon: const Icon(Icons.download),
+                            label: const Text('PNG'),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
@@ -103,8 +103,8 @@ class QrPreviewCard extends StatelessWidget {
                                 currentQR!,
                               );
                             },
-                            icon: Icon(Icons.code),
-                            label: Text('SVG'),
+                            icon: const Icon(Icons.code),
+                            label: const Text('SVG'),
                           ),
                         ),
                       ],
@@ -119,12 +119,12 @@ class QrPreviewCard extends StatelessWidget {
                             onPressed: () {
                               QrExportService.saveAsPng(context, currentQR!);
                             },
-                            icon: Icon(Icons.download),
-                            label: Text('PNG'),
+                            icon: const Icon(Icons.download),
+                            label: const Text('PNG'),
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Flexible(
                         child: SizedBox(
                           width: double.infinity,
@@ -135,8 +135,8 @@ class QrPreviewCard extends StatelessWidget {
                                 currentQR!,
                               );
                             },
-                            icon: Icon(Icons.code),
-                            label: Text('SVG'),
+                            icon: const Icon(Icons.code),
+                            label: const Text('SVG'),
                           ),
                         ),
                       ),

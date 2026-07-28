@@ -4,11 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/qr_data.dart';
 
 class HistoryService {
+  factory HistoryService() => _instance;
+
+  HistoryService._internal();
+
   static const String _historyKey = 'qr_history';
   static final HistoryService _instance = HistoryService._internal();
-
-  factory HistoryService() => _instance;
-  HistoryService._internal();
 
   final StreamController<List<QRData>> _controller =
       StreamController<List<QRData>>.broadcast();

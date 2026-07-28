@@ -23,9 +23,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
   bool get hasUnsavedChanges => _state.hasUnsavedChanges;
 
   @override
-  void reset() {
-    setState(() => _state.reset());
-  }
+  void reset() => setState(_state.reset);
 
   @override
   void loadFromData(QRData data, {bool markAsSaved = true}) {
@@ -50,14 +48,14 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
     _state.isSaved = false;
     _debounce = Timer(
       const Duration(milliseconds: 300),
-      () => setState(() => _state.generateQR()),
+      () => setState(_state.generateQR),
     );
   }
 
   Widget _buildInputCard() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -67,23 +65,23 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _state.ssidController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Network Name (SSID) *',
                 hintText: 'My WiFi Network',
                 prefixIcon: Icon(Icons.wifi),
               ),
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _state.passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 hintText: 'Enter password',
-                prefixIcon: Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _state.obscurePassword
@@ -100,14 +98,14 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
               obscureText: _state.obscurePassword,
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _state.encryptionType,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Encryption Type',
                 prefixIcon: Icon(Icons.security),
               ),
-              items: [
+              items: const [
                 DropdownMenuItem(value: 'WPA', child: Text('WPA/WPA2')),
                 DropdownMenuItem(value: 'WEP', child: Text('WEP')),
                 DropdownMenuItem(value: '', child: Text('None')),
@@ -121,10 +119,10 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
                 }
               },
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             SwitchListTile(
-              title: Text('Hidden Network'),
-              subtitle: Text(
+              title: const Text('Hidden Network'),
+              subtitle: const Text(
                 'Enable if network SSID is hidden',
                 style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
               ),
@@ -138,7 +136,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
               activeThumbColor: AppTheme.primaryPurple,
               contentPadding: EdgeInsets.zero,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             CustomizationPanel(
               foregroundColor: _state.foregroundColor,
               backgroundColor: _state.backgroundColor,

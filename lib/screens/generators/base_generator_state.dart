@@ -18,6 +18,10 @@ abstract class BaseGeneratorState<T extends QRData> {
 
   bool get hasUnsavedChanges => currentQR != null && !isSaved;
 
+  void reset();
+  void loadFromData(QRData data, {bool markAsSaved = true});
+  void dispose();
+
   void resetBase() {
     foregroundColor = defaultForegroundColor;
     backgroundColor = defaultBackgroundColor;
@@ -41,11 +45,10 @@ abstract class BaseGeneratorState<T extends QRData> {
     await HistoryService().addItem(currentQR!);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('QR code saved to history'),
           backgroundColor: AppTheme.success,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     }

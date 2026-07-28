@@ -33,24 +33,24 @@ class AppTheme {
       ),
       textTheme: _cachedLightTextTheme,
       scaffoldBackgroundColor: backgroundLight,
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
         color: surfaceWhite,
       ),
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         filled: true,
         fillColor: surfaceWhite,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(color: divider),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(color: divider),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(color: primaryPurple, width: 2),
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -59,14 +59,14 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryPurple,
           foregroundColor: surfaceWhite,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: surfaceWhite,
-        selectedIconTheme: IconThemeData(color: primaryPurple),
-        unselectedIconTheme: IconThemeData(color: textSecondary),
+        selectedIconTheme: const IconThemeData(color: primaryPurple),
+        unselectedIconTheme: const IconThemeData(color: textSecondary),
         selectedLabelTextStyle: _cachedLightTextTheme.labelMedium?.copyWith(
           color: primaryPurple,
           fontWeight: FontWeight.w600,
@@ -87,24 +87,24 @@ class AppTheme {
       ),
       textTheme: _cachedDarkTextTheme,
       scaffoldBackgroundColor: backgroundDark,
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
         color: surfaceDark,
       ),
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         filled: true,
         fillColor: surfaceDark,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(color: dividerDark),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(color: dividerDark),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(color: primaryPurpleLight, width: 2),
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -113,14 +113,14 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryPurple,
           foregroundColor: surfaceWhite,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: surfaceDark,
-        selectedIconTheme: IconThemeData(color: primaryPurpleLight),
-        unselectedIconTheme: IconThemeData(color: textSecondaryDark),
+        selectedIconTheme: const IconThemeData(color: primaryPurpleLight),
+        unselectedIconTheme: const IconThemeData(color: textSecondaryDark),
         selectedLabelTextStyle: _cachedDarkTextTheme.labelMedium?.copyWith(
           color: primaryPurpleLight,
           fontWeight: FontWeight.w600,

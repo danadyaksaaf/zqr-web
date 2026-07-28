@@ -41,12 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late final List<Widget> _screens;
 
   @override
-  void dispose() {
-    _connectivitySubscription?.cancel();
-    super.dispose();
-  }
-
-  @override
   void initState() {
     super.initState();
     _screens = [
@@ -58,6 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
       HistoryScreen(onNavigateToTab: navigateToTabWithData),
     ];
     _initConnectivity();
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
   }
 
   void navigateToTabWithData(int tabIndex, QRData data, {bool markAsSaved = true}) {
@@ -129,22 +129,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showUnsavedChangesDialog(int newIndex) {
     final generatorState = _currentGeneratorState();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        icon: Icon(
+        icon: const Icon(
           Icons.warning_amber_rounded,
           color: AppTheme.error,
           size: 40,
         ),
-        title: Text('Unsaved Changes'),
-        content: Text(
+        title: const Text('Unsaved Changes'),
+        content: const Text(
           'You have unsaved QR code changes. Would you like to save them to history before leaving?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pop(context);
               setState(() => _selectedIndex = newIndex);
             },
-            child: Text("Don't Save", style: TextStyle(color: AppTheme.error)),
+            child: const Text("Don't Save", style: TextStyle(color: AppTheme.error)),
           ),
           ElevatedButton.icon(
             onPressed: () async {
@@ -164,8 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() => _selectedIndex = newIndex);
               }
             },
-            icon: Icon(Icons.save_outlined, size: 18),
-            label: Text('Save'),
+            icon: const Icon(Icons.save_outlined, size: 18),
+            label: const Text('Save'),
           ),
         ],
       ),
@@ -257,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onDestinationSelected: _onTabChanged,
               labelType: NavigationRailLabelType.all,
               leading: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Column(
                   children: [
                     ClipRRect(
@@ -268,8 +268,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 32,
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text(
+                    const SizedBox(height: 4),
+                    const Text(
                       'zQR',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -280,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              destinations: [
+              destinations: const [
                 NavigationRailDestination(
                   icon: Icon(Icons.text_fields_outlined),
                   selectedIcon: Icon(Icons.text_fields),
@@ -316,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
-                    padding: EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: 16),
                     child: RotatedBox(
                       quarterTurns: -1,
                       child: Text(
@@ -348,8 +348,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 28,
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Text(
+                        const SizedBox(width: 8),
+                        const Text(
                           'zQR',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -361,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     centerTitle: false,
                     actions: [
                       Padding(
-                        padding: EdgeInsets.only(right: 16),
+                        padding: const EdgeInsets.only(right: 16),
                         child: _buildThemeSwitch(),
                       ),
                     ],
@@ -395,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 NavigationBar(
                   selectedIndex: _selectedIndex,
                   onDestinationSelected: _onTabChanged,
-                  destinations: [
+                  destinations: const [
                     NavigationDestination(
                       icon: Icon(Icons.text_fields_outlined),
                       selectedIcon: Icon(Icons.text_fields),

@@ -23,9 +23,7 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen>
   bool get hasUnsavedChanges => _state.hasUnsavedChanges;
 
   @override
-  void reset() {
-    setState(() => _state.reset());
-  }
+  void reset() => setState(_state.reset);
 
   @override
   void loadFromData(QRData data, {bool markAsSaved = true}) {
@@ -50,14 +48,14 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen>
     _state.isSaved = false;
     _debounce = Timer(
       const Duration(milliseconds: 300),
-      () => setState(() => _state.generateQR()),
+      () => setState(_state.generateQR),
     );
   }
 
   Widget _buildInputCard() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -67,10 +65,10 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen>
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _state.urlController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'URL',
                 hintText: 'https://example.com',
                 prefixIcon: Icon(Icons.link),
@@ -78,10 +76,10 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen>
               keyboardType: TextInputType.url,
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             SwitchListTile(
-              title: Text('Dynamic Short Link'),
-              subtitle: Text(
+              title: const Text('Dynamic Short Link'),
+              subtitle: const Text(
                 'Enable tracking and analytics',
                 style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
               ),
@@ -95,7 +93,7 @@ class _URLGeneratorScreenState extends State<URLGeneratorScreen>
               activeThumbColor: AppTheme.primaryPurple,
               contentPadding: EdgeInsets.zero,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             CustomizationPanel(
               foregroundColor: _state.foregroundColor,
               backgroundColor: _state.backgroundColor,

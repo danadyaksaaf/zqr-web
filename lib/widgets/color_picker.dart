@@ -3,10 +3,6 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../theme/app_theme.dart';
 
 class QrColorPicker extends StatelessWidget {
-  final String label;
-  final int currentColor;
-  final ValueChanged<int> onChanged;
-
   const QrColorPicker({
     super.key,
     required this.label,
@@ -14,16 +10,20 @@ class QrColorPicker extends StatelessWidget {
     required this.onChanged,
   });
 
+  final String label;
+  final int currentColor;
+  final ValueChanged<int> onChanged;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
-          child: Text(label, style: TextStyle(fontWeight: FontWeight.w500)),
+          child: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
         ),
         GestureDetector(
           onTap: () {
-            showDialog(
+            showDialog<void>(
               context: context,
               builder: (context) => AlertDialog(
                 title: Text('Select $label'),
@@ -38,7 +38,7 @@ class QrColorPicker extends StatelessWidget {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('Done'),
+                    child: const Text('Done'),
                   ),
                 ],
               ),
@@ -55,7 +55,7 @@ class QrColorPicker extends StatelessWidget {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),

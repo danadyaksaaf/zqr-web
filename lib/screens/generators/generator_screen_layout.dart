@@ -3,12 +3,6 @@ import '../../models/qr_data.dart';
 import '../../widgets/qr_preview_card.dart';
 
 class GeneratorScreenLayout extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String emptyHint;
-  final QRData? currentQR;
-  final Widget inputCard;
-
   const GeneratorScreenLayout({
     super.key,
     required this.title,
@@ -17,6 +11,12 @@ class GeneratorScreenLayout extends StatelessWidget {
     required this.currentQR,
     required this.inputCard,
   });
+
+  final String title;
+  final String subtitle;
+  final String emptyHint;
+  final QRData? currentQR;
+  final Widget inputCard;
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +34,12 @@ class GeneratorScreenLayout extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 subtitle,
                 style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               if (stacked)
                 Column(
                   children: [
@@ -48,7 +48,7 @@ class GeneratorScreenLayout extends StatelessWidget {
                       emptyHint: emptyHint,
                       compact: true,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     inputCard,
                   ],
                 )
@@ -57,7 +57,7 @@ class GeneratorScreenLayout extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(flex: 2, child: inputCard),
-                    SizedBox(width: 24),
+                    const SizedBox(width: 24),
                     Expanded(
                       flex: 1,
                       child: QrPreviewCard(

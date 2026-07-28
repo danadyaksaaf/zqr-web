@@ -23,9 +23,7 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
   bool get hasUnsavedChanges => _state.hasUnsavedChanges;
 
   @override
-  void reset() {
-    setState(() => _state.reset());
-  }
+  void reset() => setState(_state.reset);
 
   @override
   void loadFromData(QRData data, {bool markAsSaved = true}) {
@@ -50,14 +48,14 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
     _state.isSaved = false;
     _debounce = Timer(
       const Duration(milliseconds: 300),
-      () => setState(() => _state.generateQR()),
+      () => setState(_state.generateQR),
     );
   }
 
   Widget _buildInputCard() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -67,20 +65,20 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _state.fullNameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Full Name *',
                 hintText: 'John Doe',
                 prefixIcon: Icon(Icons.person),
               ),
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _state.phoneController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Phone',
                 hintText: '+1 234 567 890',
                 prefixIcon: Icon(Icons.phone),
@@ -88,10 +86,10 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
               keyboardType: TextInputType.phone,
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _state.emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'john@example.com',
                 prefixIcon: Icon(Icons.email),
@@ -99,20 +97,20 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
               keyboardType: TextInputType.emailAddress,
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _state.organizationController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Organization',
                 hintText: 'Company Name',
                 prefixIcon: Icon(Icons.business),
               ),
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _state.websiteController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Website',
                 hintText: 'https://example.com',
                 prefixIcon: Icon(Icons.language),
@@ -120,7 +118,7 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
               keyboardType: TextInputType.url,
               onChanged: (_) => _onFieldChanged(),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             CustomizationPanel(
               foregroundColor: _state.foregroundColor,
               backgroundColor: _state.backgroundColor,
@@ -160,7 +158,7 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
   Widget _buildContactCard() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -174,16 +172,16 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
               _state.fullNameController.text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           if (_state.organizationController.text.isNotEmpty)
             Text(
               _state.organizationController.text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: AppTheme.textSecondary),
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
-          Divider(height: 24),
+          const Divider(height: 24),
           if (_state.phoneController.text.isNotEmpty)
             _buildContactRow(Icons.phone, _state.phoneController.text),
           if (_state.emailController.text.isNotEmpty)
@@ -197,11 +195,11 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
 
   Widget _buildContactRow(IconData icon, String text) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Icon(icon, size: 16, color: AppTheme.primaryPurple),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
@@ -226,12 +224,12 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Create a QR code for your contact information',
                 style: TextStyle(color: AppTheme.textSecondary),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               if (stacked)
                 Column(
                   children: [
@@ -240,7 +238,7 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
                       emptyHint: 'Enter name to preview',
                       compact: true,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildInputCard(),
                   ],
                 )
@@ -249,7 +247,7 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(flex: 2, child: _buildInputCard()),
-                    SizedBox(width: 24),
+                    const SizedBox(width: 24),
                     Expanded(
                       flex: 1,
                       child: Column(
@@ -258,25 +256,22 @@ class _VCardGeneratorScreenState extends State<VCardGeneratorScreen>
                             currentQR: _state.currentQR,
                             emptyHint: 'Enter name to preview',
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Card(
                             child: Padding(
-                              padding: EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     'Contact Card Preview',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                    style: TextStyle(fontWeight: FontWeight.w600),
                                   ),
-                                  SizedBox(height: 12),
+                                  const SizedBox(height: 12),
                                   if (_state.fullNameController.text.isNotEmpty)
                                     _buildContactCard()
                                   else
-                                    Text(
+                                    const Text(
                                       'Enter contact details to see preview',
                                       style: TextStyle(
                                         color: AppTheme.textSecondary,

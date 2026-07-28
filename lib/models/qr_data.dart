@@ -45,17 +45,6 @@ extension QRTypeHelpers on QRType {
 }
 
 class QRData {
-  final String id;
-  final QRType type;
-  final String title;
-  final String content;
-  final DateTime createdAt;
-  final int foregroundColor;
-  final int backgroundColor;
-  final double correctionLevel;
-  final String? logoPath;
-  final String? frameText;
-
   QRData({
     String? id,
     required this.type,
@@ -70,21 +59,6 @@ class QRData {
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'type': type.index,
-      'title': title,
-      'content': content,
-      'createdAt': createdAt.toIso8601String(),
-      'foregroundColor': foregroundColor,
-      'backgroundColor': backgroundColor,
-      'correctionLevel': correctionLevel,
-      'logoPath': logoPath,
-      'frameText': frameText,
-    };
-  }
-
   factory QRData.fromJson(Map<String, dynamic> json) {
     return QRData(
       id: json['id'] as String,
@@ -98,6 +72,32 @@ class QRData {
       logoPath: json['logoPath'] as String?,
       frameText: json['frameText'] as String?,
     );
+  }
+
+  final String id;
+  final QRType type;
+  final String title;
+  final String content;
+  final DateTime createdAt;
+  final int foregroundColor;
+  final int backgroundColor;
+  final double correctionLevel;
+  final String? logoPath;
+  final String? frameText;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type.index,
+      'title': title,
+      'content': content,
+      'createdAt': createdAt.toIso8601String(),
+      'foregroundColor': foregroundColor,
+      'backgroundColor': backgroundColor,
+      'correctionLevel': correctionLevel,
+      'logoPath': logoPath,
+      'frameText': frameText,
+    };
   }
 
   QRData copyWith({
@@ -140,9 +140,6 @@ class QRData {
 }
 
 class URLQRData extends QRData {
-  final String url;
-  final bool isDynamicShortLink;
-
   URLQRData({
     required this.url,
     this.isDynamicShortLink = false,
@@ -157,6 +154,9 @@ class URLQRData extends QRData {
           content: url,
         );
 
+  final String url;
+  final bool isDynamicShortLink;
+
   @override
   Map<String, dynamic> toJson() {
     return super.toJson()..addAll({
@@ -167,12 +167,6 @@ class URLQRData extends QRData {
 }
 
 class VCardQRData extends QRData {
-  final String fullName;
-  final String phone;
-  final String email;
-  final String organization;
-  final String website;
-
   VCardQRData({
     required this.fullName,
     this.phone = '',
@@ -189,6 +183,12 @@ class VCardQRData extends QRData {
           title: 'vCard',
           content: _generateVCard(fullName, phone, email, organization, website),
         );
+
+  final String fullName;
+  final String phone;
+  final String email;
+  final String organization;
+  final String website;
 
   static String _generateVCard(
     String fullName,
@@ -214,11 +214,6 @@ END:VCARD''';
 }
 
 class WiFiQRData extends QRData {
-  final String ssid;
-  final String password;
-  final String encryptionType;
-  final bool isHidden;
-
   WiFiQRData({
     required this.ssid,
     this.password = '',
@@ -235,6 +230,11 @@ class WiFiQRData extends QRData {
           content: _generateWiFi(ssid, password, encryptionType, isHidden),
         );
 
+  final String ssid;
+  final String password;
+  final String encryptionType;
+  final bool isHidden;
+
   static String _generateWiFi(
     String ssid,
     String password,
@@ -247,9 +247,6 @@ class WiFiQRData extends QRData {
 }
 
 class TextQRData extends QRData {
-  final String text;
-  final int charCount;
-
   TextQRData({
     required this.text,
     super.foregroundColor,
@@ -263,4 +260,7 @@ class TextQRData extends QRData {
           title: 'Text',
           content: text,
         );
+
+  final String text;
+  final int charCount;
 }

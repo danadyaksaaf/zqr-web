@@ -33,16 +33,16 @@ void main() async {
 }
 
 class MainApp extends StatefulWidget {
-  final bool initialDarkMode;
-  final bool initialConnected;
-  final SharedPreferences? prefs;
-
   const MainApp({
     super.key,
     required this.initialDarkMode,
     required this.initialConnected,
     this.prefs,
   });
+
+  final bool initialDarkMode;
+  final bool initialConnected;
+  final SharedPreferences? prefs;
 
   @override
   State<MainApp> createState() => _MainAppState();
@@ -82,9 +82,9 @@ class _MainAppState extends State<MainApp> {
 }
 
 class _OfflineScreen extends StatelessWidget {
-  final VoidCallback onRetry;
-
   const _OfflineScreen({required this.onRetry});
+
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +108,7 @@ class _OfflineScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 'Please check your internet connection and try again.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -121,8 +121,8 @@ class _OfflineScreen extends StatelessWidget {
                 width: 200,
                 child: ElevatedButton.icon(
                   onPressed: onRetry,
-                  icon: Icon(Icons.refresh),
-                  label: Text('Retry'),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
