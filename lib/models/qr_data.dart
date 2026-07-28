@@ -1,6 +1,48 @@
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 enum QRType { url, vcard, wifi, text }
+
+extension QRTypeHelpers on QRType {
+  int get tabIndex {
+    switch (this) {
+      case QRType.text:
+        return 0;
+      case QRType.url:
+        return 1;
+      case QRType.vcard:
+        return 2;
+      case QRType.wifi:
+        return 3;
+    }
+  }
+
+  String get typeName {
+    switch (this) {
+      case QRType.url:
+        return 'URL';
+      case QRType.vcard:
+        return 'vCard';
+      case QRType.wifi:
+        return 'Wi-Fi';
+      case QRType.text:
+        return 'Text';
+    }
+  }
+
+  IconData get typeIcon {
+    switch (this) {
+      case QRType.url:
+        return Icons.link;
+      case QRType.vcard:
+        return Icons.badge;
+      case QRType.wifi:
+        return Icons.wifi;
+      case QRType.text:
+        return Icons.text_fields;
+    }
+  }
+}
 
 class QRData {
   final String id;
@@ -45,16 +87,16 @@ class QRData {
 
   factory QRData.fromJson(Map<String, dynamic> json) {
     return QRData(
-      id: json['id'],
-      type: QRType.values[json['type']],
-      title: json['title'],
-      content: json['content'],
-      createdAt: DateTime.parse(json['createdAt']),
-      foregroundColor: json['foregroundColor'],
-      backgroundColor: json['backgroundColor'],
-      correctionLevel: json['correctionLevel'],
-      logoPath: json['logoPath'],
-      frameText: json['frameText'],
+      id: json['id'] as String,
+      type: QRType.values[json['type'] as int],
+      title: json['title'] as String,
+      content: json['content'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      foregroundColor: json['foregroundColor'] as int,
+      backgroundColor: json['backgroundColor'] as int,
+      correctionLevel: (json['correctionLevel'] as num).toDouble(),
+      logoPath: json['logoPath'] as String?,
+      frameText: json['frameText'] as String?,
     );
   }
 

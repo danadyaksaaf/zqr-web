@@ -1,43 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../models/qr_data.dart';
-import '../../services/history_service.dart';
-import '../../theme/app_theme.dart';
+import 'base_generator_state.dart';
 
-class WiFiGeneratorState {
+class WiFiGeneratorState extends BaseGeneratorState<WiFiQRData> {
   final ssidController = TextEditingController();
   final passwordController = TextEditingController();
   String encryptionType = 'WPA';
   bool isHidden = false;
   bool obscurePassword = true;
 
-  int foregroundColor = 0xFF212121;
-  int backgroundColor = 0xFFFFFFFF;
-  double correctionLevel = 0.15;
-  String? frameText;
-
-  WiFiQRData? currentQR;
-  bool isSaved = false;
-
-  static const int _defaultForegroundColor = 0xFF212121;
-  static const int _defaultBackgroundColor = 0xFFFFFFFF;
-  static const double _defaultCorrectionLevel = 0.15;
-
-  bool get hasUnsavedChanges => currentQR != null && !isSaved;
-
+  @override
   void reset() {
     ssidController.clear();
     passwordController.clear();
     encryptionType = 'WPA';
     isHidden = false;
     obscurePassword = true;
-    foregroundColor = _defaultForegroundColor;
-    backgroundColor = _defaultBackgroundColor;
-    correctionLevel = _defaultCorrectionLevel;
-    frameText = null;
-    currentQR = null;
-    isSaved = false;
+    resetBase();
   }
 
+  @override
   void loadFromData(QRData data, {bool markAsSaved = true}) {
     final ssidMatch = RegExp(r'S:([^;]+)').firstMatch(data.content);
     final passMatch = RegExp(r'P:([^;]+)').firstMatch(data.content);
@@ -48,11 +30,7 @@ class WiFiGeneratorState {
     passwordController.text = passMatch?.group(1) ?? '';
     encryptionType = typeMatch?.group(1) ?? 'WPA';
     isHidden = hiddenMatch != null;
-    foregroundColor = data.foregroundColor;
-    backgroundColor = data.backgroundColor;
-    correctionLevel = data.correctionLevel;
-    frameText = data.frameText;
-    isSaved = markAsSaved;
+    loadBase(data, markAsSaved: markAsSaved);
     currentQR = WiFiQRData(
       ssid: ssidController.text,
       password: passwordController.text,
@@ -63,22 +41,6 @@ class WiFiGeneratorState {
       correctionLevel: data.correctionLevel,
       frameText: data.frameText,
     );
-  }
-
-  Future<void> saveToHistory(BuildContext context) async {
-    if (currentQR == null) return;
-    isSaved = true;
-    await HistoryService().addItem(currentQR!);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('QR code saved to history'),
-          backgroundColor: AppTheme.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
-    }
   }
 
   void generateQR() {
@@ -99,6 +61,7 @@ class WiFiGeneratorState {
     );
   }
 
+  @override
   void dispose() {
     ssidController.dispose();
     passwordController.dispose();

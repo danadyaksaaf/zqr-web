@@ -5,24 +5,32 @@ import 'package:zqr/main.dart';
 void main() {
   group('MainApp', () {
     testWidgets('renders MaterialApp', (tester) async {
-      await tester.pumpWidget(const MainApp(initialDarkMode: false, initialConnected: true));
+      await tester.pumpWidget(
+        const MainApp(initialDarkMode: false, initialConnected: true, prefs: null),
+      );
       expect(find.byType(MaterialApp), findsOneWidget);
     });
 
-    testWidgets('renders Scaffold', (tester) async {
-      await tester.pumpWidget(const MainApp(initialDarkMode: false, initialConnected: true));
+    testWidgets('renders Scaffold when connected', (tester) async {
+      await tester.pumpWidget(
+        const MainApp(initialDarkMode: false, initialConnected: true, prefs: null),
+      );
       expect(find.byType(Scaffold), findsOneWidget);
     });
 
-    testWidgets('displays Hello World text', (tester) async {
-      await tester.pumpWidget(const MainApp(initialDarkMode: false, initialConnected: true));
-      expect(find.text('Hello World!'), findsOneWidget);
+    testWidgets('shows HomeScreen when connected', (tester) async {
+      await tester.pumpWidget(
+        const MainApp(initialDarkMode: false, initialConnected: true, prefs: null),
+      );
+      expect(find.text('zQR'), findsOneWidget);
     });
 
-    testWidgets('centers the text', (tester) async {
-      await tester.pumpWidget(const MainApp(initialDarkMode: false, initialConnected: true));
-      final center = tester.widget<Center>(find.byType(Center));
-      expect(center.child, isA<Text>());
+    testWidgets('shows offline screen when not connected', (tester) async {
+      await tester.pumpWidget(
+        const MainApp(initialDarkMode: false, initialConnected: false, prefs: null),
+      );
+      expect(find.text('No Connection'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
     });
   });
 }
