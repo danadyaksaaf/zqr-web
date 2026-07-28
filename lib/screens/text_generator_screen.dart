@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/qr_data.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/qr_preview_card.dart';
 import '../../widgets/customization_panel.dart';
 import 'generators/generator_resettable.dart';
 import 'generators/text_generator_state.dart';
+import 'generators/generator_screen_layout.dart';
 
 class TextGeneratorScreen extends StatefulWidget {
   const TextGeneratorScreen({super.key});
@@ -16,6 +17,7 @@ class TextGeneratorScreen extends StatefulWidget {
 class _TextGeneratorScreenState extends State<TextGeneratorScreen>
     implements GeneratorResettable {
   final _state = TextGeneratorState();
+  Timer? _debounce;
   static const int _maxCharacters = 2500;
 
   @override
@@ -39,12 +41,18 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen>
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _state.dispose();
     super.dispose();
   }
 
   void _onFieldChanged() {
-    setState(() => _state.generateQR());
+    _debounce?.cancel();
+    _state.isSaved = false;
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () => setState(() => _state.generateQR()),
+    );
   }
 
   Widget _buildInputCard() {
@@ -107,16 +115,22 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen>
               correctionLevel: _state.correctionLevel,
               frameText: _state.frameText,
               onForegroundColorChanged: (color) {
-                setState(() => _state.foregroundColor = color);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.foregroundColor = color;
+                  _state.generateQR();
+                });
               },
               onBackgroundColorChanged: (color) {
-                setState(() => _state.backgroundColor = color);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.backgroundColor = color;
+                  _state.generateQR();
+                });
               },
               onCorrectionLevelChanged: (level) {
-                setState(() => _state.correctionLevel = level);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.correctionLevel = level;
+                  _state.generateQR();
+                });
               },
               onFrameTextChanged: (text) {
                 setState(() => _state.frameText = text);
@@ -133,57 +147,12 @@ class _TextGeneratorScreenState extends State<TextGeneratorScreen>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final stacked = constraints.maxWidth < 600;
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(stacked ? 16 : 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Text Generator',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Create a QR code for raw text or notes',
-                style: TextStyle(color: AppTheme.textSecondary),
-              ),
-              SizedBox(height: 24),
-              if (stacked)
-                Column(
-                  children: [
-                    QrPreviewCard(
-                      currentQR: _state.currentQR,
-                      emptyHint: 'Enter text to preview',
-                      compact: true,
-                    ),
-                    SizedBox(height: 16),
-                    _buildInputCard(),
-                  ],
-                )
-              else
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex: 2, child: _buildInputCard()),
-                    SizedBox(width: 24),
-                    Expanded(
-                      flex: 1,
-                      child: QrPreviewCard(
-                        currentQR: _state.currentQR,
-                        emptyHint: 'Enter text to preview',
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-        );
-      },
+    return GeneratorScreenLayout(
+      title: 'Text Generator',
+      subtitle: 'Create a QR code for raw text or notes',
+      emptyHint: 'Enter text to preview',
+      currentQR: _state.currentQR,
+      inputCard: _buildInputCard(),
     );
   }
 }

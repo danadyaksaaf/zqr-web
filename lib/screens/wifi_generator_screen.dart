@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/qr_data.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/qr_preview_card.dart';
 import '../../widgets/customization_panel.dart';
 import 'generators/generator_resettable.dart';
 import 'generators/wifi_generator_state.dart';
+import 'generators/generator_screen_layout.dart';
 
 class WiFiGeneratorScreen extends StatefulWidget {
   const WiFiGeneratorScreen({super.key});
@@ -50,11 +50,7 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
     _state.isSaved = false;
     _debounce = Timer(
       const Duration(milliseconds: 300),
-      () {
-        final wasSaved = _state.isSaved;
-        setState(() => _state.generateQR());
-        if (wasSaved) _state.isSaved = true;
-      },
+      () => setState(() => _state.generateQR()),
     );
   }
 
@@ -118,8 +114,10 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
               ],
               onChanged: (value) {
                 if (value != null) {
-                  setState(() => _state.encryptionType = value);
-                  setState(() => _state.generateQR());
+                  setState(() {
+                    _state.encryptionType = value;
+                    _state.generateQR();
+                  });
                 }
               },
             ),
@@ -132,8 +130,10 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
               ),
               value: _state.isHidden,
               onChanged: (value) {
-                setState(() => _state.isHidden = value);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.isHidden = value;
+                  _state.generateQR();
+                });
               },
               activeThumbColor: AppTheme.primaryPurple,
               contentPadding: EdgeInsets.zero,
@@ -145,16 +145,22 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
               correctionLevel: _state.correctionLevel,
               frameText: _state.frameText,
               onForegroundColorChanged: (color) {
-                setState(() => _state.foregroundColor = color);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.foregroundColor = color;
+                  _state.generateQR();
+                });
               },
               onBackgroundColorChanged: (color) {
-                setState(() => _state.backgroundColor = color);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.backgroundColor = color;
+                  _state.generateQR();
+                });
               },
               onCorrectionLevelChanged: (level) {
-                setState(() => _state.correctionLevel = level);
-                setState(() => _state.generateQR());
+                setState(() {
+                  _state.correctionLevel = level;
+                  _state.generateQR();
+                });
               },
               onFrameTextChanged: (text) {
                 setState(() => _state.frameText = text);
@@ -171,57 +177,12 @@ class _WiFiGeneratorScreenState extends State<WiFiGeneratorScreen>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final stacked = constraints.maxWidth < 600;
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(stacked ? 16 : 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Wi-Fi Generator',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Create a QR code for Wi-Fi network access',
-                style: TextStyle(color: AppTheme.textSecondary),
-              ),
-              SizedBox(height: 24),
-              if (stacked)
-                Column(
-                  children: [
-                    QrPreviewCard(
-                      currentQR: _state.currentQR,
-                      emptyHint: 'Enter SSID to preview',
-                      compact: true,
-                    ),
-                    SizedBox(height: 16),
-                    _buildInputCard(),
-                  ],
-                )
-              else
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex: 2, child: _buildInputCard()),
-                    SizedBox(width: 24),
-                    Expanded(
-                      flex: 1,
-                      child: QrPreviewCard(
-                        currentQR: _state.currentQR,
-                        emptyHint: 'Enter SSID to preview',
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-        );
-      },
+    return GeneratorScreenLayout(
+      title: 'Wi-Fi Generator',
+      subtitle: 'Create a QR code for Wi-Fi network access',
+      emptyHint: 'Enter SSID to preview',
+      currentQR: _state.currentQR,
+      inputCard: _buildInputCard(),
     );
   }
 }
