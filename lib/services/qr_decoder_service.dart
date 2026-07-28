@@ -17,12 +17,6 @@ extension type _BarcodeDetector._(JSObject _) implements JSObject {
 enum QRDecoderErrorType { noQrFound, unsupported, decodeFailed }
 
 class QRDecoderResult {
-  final String rawContent;
-  final QRData? parsedData;
-  final QRType? detectedType;
-  final bool isSupported;
-  final QRDecoderErrorType? errorType;
-
   QRDecoderResult._({
     required this.rawContent,
     this.parsedData,
@@ -63,6 +57,12 @@ class QRDecoderResult {
       errorType: QRDecoderErrorType.decodeFailed,
     );
   }
+
+  final String rawContent;
+  final QRData? parsedData;
+  final QRType? detectedType;
+  final bool isSupported;
+  final QRDecoderErrorType? errorType;
 }
 
 String _detectMimeType(Uint8List bytes) {

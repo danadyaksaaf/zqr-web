@@ -4,25 +4,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/qr_data.dart';
 
 class HistoryService {
+  factory HistoryService() => _instance;
+
+  HistoryService._internal();
+
   static const String _historyKey = 'qr_history';
   static final HistoryService _instance = HistoryService._internal();
-
-  factory HistoryService() => _instance;
-  HistoryService._internal();
 
   final StreamController<List<QRData>> _controller =
       StreamController<List<QRData>>.broadcast();
 
   List<QRData> _history = [];
+  SharedPreferences? _prefs;
 
   List<QRData> get history => List.unmodifiable(_history);
   Stream<List<QRData>> get historyStream => _controller.stream;
 
-  Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    final historyJson = prefs.getStringList(_historyKey) ?? [];
+  Future<void> init([SharedPreferences? prefs]) async {
+    _prefs = prefs ?? await SharedPreferences.getInstance();
+    final historyJson = _prefs!.getStringList(_historyKey) ?? [];
     _history = historyJson
-        .map((json) => QRData.fromJson(jsonDecode(json)))
+        .map((json) => QRData.fromJson(jsonDecode(json) as Map<String, dynamic>))
         .toList();
   }
 
@@ -45,7 +47,7 @@ class HistoryService {
   }
 
   Future<void> _save() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = _prefs ??= await SharedPreferences.getInstance();
     final historyJson =
         _history.map((item) => jsonEncode(item.toJson())).toList();
     await prefs.setStringList(_historyKey, historyJson);

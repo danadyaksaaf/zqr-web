@@ -1,11 +1,12 @@
 import 'dart:convert';
-import 'dart:html' as html;
+import 'dart:js_interop';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:web/web.dart' as web;
 
 import '../models/qr_data.dart';
 import '../theme/app_theme.dart';
@@ -37,21 +38,23 @@ class QrExportService {
   }
 
   static void _downloadBytes(Uint8List bytes, String fileName, String mimeType) {
-    final blob = html.Blob([bytes], mimeType);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    html.AnchorElement(href: url)
-      ..setAttribute('download', fileName)
-      ..click();
-    html.Url.revokeObjectUrl(url);
+    final blob = web.Blob([bytes.toJS].toJS, web.BlobPropertyBag(type: mimeType));
+    final url = web.URL.createObjectURL(blob);
+    final anchor = web.HTMLAnchorElement()
+      ..href = url
+      ..setAttribute('download', fileName);
+    anchor.click();
+    web.URL.revokeObjectURL(url);
   }
 
   static void _downloadString(String content, String fileName, String mimeType) {
-    final blob = html.Blob([content], mimeType);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    html.AnchorElement(href: url)
-      ..setAttribute('download', fileName)
-      ..click();
-    html.Url.revokeObjectUrl(url);
+    final blob = web.Blob([content.toJS].toJS, web.BlobPropertyBag(type: mimeType));
+    final url = web.URL.createObjectURL(blob);
+    final anchor = web.HTMLAnchorElement()
+      ..href = url
+      ..setAttribute('download', fileName);
+    anchor.click();
+    web.URL.revokeObjectURL(url);
   }
 
   static Future<void> saveAsPng(BuildContext context, QRData qrData) async {
@@ -71,10 +74,10 @@ class QrExportService {
         final textPainter = TextPainter(
           text: TextSpan(
             text: qrData.frameText,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 48,
               fontWeight: FontWeight.w600,
-              color: Color(qrData.foregroundColor),
+              color: Color(0xFF212121),
               letterSpacing: 1.5,
             ),
           ),
@@ -158,7 +161,7 @@ class QrExportService {
     }
 
     if (hasFrameText) {
-      final textY = viewBoxSize + 40;
+      const textY = viewBoxSize + 40;
       buffer.writeln(
         '  <text x="${viewBoxSize / 2}" y="$textY" '
         'text-anchor="middle" font-family="sans-serif" '
@@ -194,7 +197,7 @@ class QrExportService {
 
       if (!context.mounted) return;
 
-      await showModalBottomSheet(
+      await showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
         shape: const RoundedRectangleBorder(
@@ -211,9 +214,9 @@ class QrExportService {
 }
 
 class _SvgExportSheet extends StatelessWidget {
-  final String svgString;
-
   const _SvgExportSheet({required this.svgString});
+
+  final String svgString;
 
   @override
   Widget build(BuildContext context) {

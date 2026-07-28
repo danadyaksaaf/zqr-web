@@ -3,14 +3,14 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../models/qr_data.dart';
 
 class QRPreviewWidget extends StatelessWidget {
-  final QRData qrData;
-  final bool showFrame;
-
   const QRPreviewWidget({
     super.key,
     required this.qrData,
     this.showFrame = true,
   });
+
+  final QRData qrData;
+  final bool showFrame;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class QRPreviewWidget extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1,
         child: Container(
-          padding: showFrame ? EdgeInsets.all(24) : null,
+          padding: showFrame ? const EdgeInsets.all(24) : null,
           decoration: showFrame
               ? BoxDecoration(
                   color: backgroundColor,
@@ -37,7 +37,7 @@ class QRPreviewWidget extends StatelessWidget {
                     BoxShadow(
                       color: foregroundColor.withValues(alpha: 0.05),
                       blurRadius: 20,
-                      offset: Offset(0, 8),
+                      offset: const Offset(0, 8),
                     ),
                   ],
                 )
@@ -64,11 +64,11 @@ class QRPreviewWidget extends StatelessWidget {
                       ? NetworkImage(qrData.logoPath!)
                       : null,
                   embeddedImageStyle: qrData.logoPath != null
-                      ? QrEmbeddedImageStyle(size: Size(40, 40))
+                      ? const QrEmbeddedImageStyle(size: Size(40, 40))
                       : null,
                 ),
                 if (hasFrameText) ...[
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: 100,
                     child: Text(

@@ -151,6 +151,7 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _state = _UploadState.error;
         _errorMsg = 'No QR code detected in the image.';
+        _imageBytes = null;
       });
       return;
     }
@@ -159,6 +160,7 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _state = _UploadState.error;
         _errorMsg = 'Failed to decode QR code. Please try another image.';
+        _imageBytes = null;
       });
       return;
     }
@@ -167,6 +169,7 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _state = _UploadState.error;
         _errorMsg = 'QR Code format is unsupported.';
+        _imageBytes = null;
       });
       return;
     }
@@ -174,6 +177,7 @@ class _UploadScreenState extends State<UploadScreen> {
     setState(() {
       _state = _UploadState.decoded;
       _decodeResult = result;
+      _imageBytes = null;
     });
   }
 
@@ -202,42 +206,15 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   int? _getTabIndex(QRType type) {
-    switch (type) {
-      case QRType.text:
-        return 0;
-      case QRType.url:
-        return 1;
-      case QRType.vcard:
-        return 2;
-      case QRType.wifi:
-        return 3;
-    }
+    return type.tabIndex;
   }
 
   String _formatTypeName(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return 'URL';
-      case QRType.vcard:
-        return 'vCard';
-      case QRType.wifi:
-        return 'Wi-Fi';
-      case QRType.text:
-        return 'Text';
-    }
+    return type.typeName;
   }
 
   IconData _formatIcon(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return Icons.link;
-      case QRType.vcard:
-        return Icons.badge;
-      case QRType.wifi:
-        return Icons.wifi;
-      case QRType.text:
-        return Icons.text_fields;
-    }
+    return type.typeIcon;
   }
 
   Widget _buildUploadZone() {
@@ -247,7 +224,7 @@ class _UploadScreenState extends State<UploadScreen> {
         duration: const Duration(milliseconds: 200),
         width: double.infinity,
         height: 200,
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
@@ -266,12 +243,12 @@ class _UploadScreenState extends State<UploadScreen> {
               size: 48,
               color: AppTheme.primaryPurple.withValues(alpha: 0.7),
             ),
-            SizedBox(height: 12),
-            Text(
+            const SizedBox(height: 12),
+            const Text(
               'Drop image here or click to browse',
               style: TextStyle(fontSize: 14, color: AppTheme.textSecondary),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               'Supports PNG, JPG, GIF, WEBP',
               style: TextStyle(
@@ -310,10 +287,10 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           _fileName ?? '',
-          style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+          style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -324,10 +301,10 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget _buildScanResult() {
     final result = _decodeResult!;
     final data = result.parsedData;
-    if (data == null) return SizedBox.shrink();
+    if (data == null) return const SizedBox.shrink();
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.success.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
@@ -336,7 +313,7 @@ class _UploadScreenState extends State<UploadScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.check_circle, color: AppTheme.success, size: 20),
               SizedBox(width: 8),
@@ -349,7 +326,7 @@ class _UploadScreenState extends State<UploadScreen> {
               ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             children: [
               Icon(
@@ -357,22 +334,22 @@ class _UploadScreenState extends State<UploadScreen> {
                 size: 16,
                 color: AppTheme.primaryPurple,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Format: ${_formatTypeName(data.type)}',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
             ],
           ),
-          SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 8),
+          const Text(
             'Content:',
             style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
@@ -380,19 +357,19 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
             child: Text(
               result.rawContent,
-              style: TextStyle(fontSize: 13, fontFamily: 'monospace'),
+              style: const TextStyle(fontSize: 13, fontFamily: 'monospace'),
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton.icon(
               onPressed: _editQR,
-              icon: Icon(Icons.edit, size: 18),
-              label: Text('Edit This QR'),
+              icon: const Icon(Icons.edit, size: 18),
+              label: const Text('Edit This QR'),
             ),
           ),
         ],
@@ -402,7 +379,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
   Widget _buildErrorState() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.error.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
@@ -410,12 +387,12 @@ class _UploadScreenState extends State<UploadScreen> {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: AppTheme.error, size: 24),
-          SizedBox(width: 12),
+          const Icon(Icons.error_outline, color: AppTheme.error, size: 24),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               _errorMsg ?? 'An unknown error occurred.',
-              style: TextStyle(color: AppTheme.error),
+              style: const TextStyle(color: AppTheme.error),
             ),
           ),
         ],
@@ -433,21 +410,21 @@ class _UploadScreenState extends State<UploadScreen> {
               height: 50,
               child: OutlinedButton.icon(
                 onPressed: _clearAll,
-                icon: Icon(Icons.refresh, size: 18),
-                label: Text('Clear'),
+                icon: const Icon(Icons.refresh, size: 18),
+                label: const Text('Clear'),
               ),
             ),
           ),
         if (_state != _UploadState.empty && _state != _UploadState.scanning)
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
         if (_state != _UploadState.empty && _state != _UploadState.scanning)
           Expanded(
             child: SizedBox(
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: hasImage ? _scanQR : null,
-                icon: Icon(Icons.qr_code_scanner, size: 18),
-                label: Text('Scan & Edit'),
+                icon: const Icon(Icons.qr_code_scanner, size: 18),
+                label: const Text('Scan & Edit'),
               ),
             ),
           ),
@@ -471,12 +448,12 @@ class _UploadScreenState extends State<UploadScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Upload a QR code image to decode and edit it',
                 style: TextStyle(color: AppTheme.textSecondary),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               if (stacked)
                 Column(children: [_buildMainCard()])
               else
@@ -494,7 +471,7 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget _buildMainCard() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -504,14 +481,14 @@ class _UploadScreenState extends State<UploadScreen> {
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (_state == _UploadState.empty) _buildUploadZone(),
             if (_state == _UploadState.imageSelected ||
                 _state == _UploadState.scanning) ...[
               _buildImagePreview(),
               if (_state == _UploadState.scanning) ...[
-                SizedBox(height: 16),
-                Center(
+                const SizedBox(height: 16),
+                const Center(
                   child: Column(
                     children: [
                       _ThreeDotLoader(),
@@ -527,17 +504,17 @@ class _UploadScreenState extends State<UploadScreen> {
             ],
             if (_state == _UploadState.decoded) ...[
               _buildImagePreview(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildScanResult(),
             ],
             if (_state == _UploadState.error) ...[
               _buildImagePreview(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildErrorState(),
             ],
             if (_state != _UploadState.empty &&
                 _state != _UploadState.scanning) ...[
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildActionButtons(),
             ],
           ],

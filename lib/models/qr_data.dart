@@ -1,19 +1,50 @@
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 enum QRType { url, vcard, wifi, text }
 
-class QRData {
-  final String id;
-  final QRType type;
-  final String title;
-  final String content;
-  final DateTime createdAt;
-  final int foregroundColor;
-  final int backgroundColor;
-  final double correctionLevel;
-  final String? logoPath;
-  final String? frameText;
+extension QRTypeHelpers on QRType {
+  int get tabIndex {
+    switch (this) {
+      case QRType.text:
+        return 0;
+      case QRType.url:
+        return 1;
+      case QRType.vcard:
+        return 2;
+      case QRType.wifi:
+        return 3;
+    }
+  }
 
+  String get typeName {
+    switch (this) {
+      case QRType.url:
+        return 'URL';
+      case QRType.vcard:
+        return 'vCard';
+      case QRType.wifi:
+        return 'Wi-Fi';
+      case QRType.text:
+        return 'Text';
+    }
+  }
+
+  IconData get typeIcon {
+    switch (this) {
+      case QRType.url:
+        return Icons.link;
+      case QRType.vcard:
+        return Icons.badge;
+      case QRType.wifi:
+        return Icons.wifi;
+      case QRType.text:
+        return Icons.text_fields;
+    }
+  }
+}
+
+class QRData {
   QRData({
     String? id,
     required this.type,
@@ -28,6 +59,32 @@ class QRData {
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
+  factory QRData.fromJson(Map<String, dynamic> json) {
+    return QRData(
+      id: json['id'] as String,
+      type: QRType.values[json['type'] as int],
+      title: json['title'] as String,
+      content: json['content'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      foregroundColor: json['foregroundColor'] as int,
+      backgroundColor: json['backgroundColor'] as int,
+      correctionLevel: (json['correctionLevel'] as num).toDouble(),
+      logoPath: json['logoPath'] as String?,
+      frameText: json['frameText'] as String?,
+    );
+  }
+
+  final String id;
+  final QRType type;
+  final String title;
+  final String content;
+  final DateTime createdAt;
+  final int foregroundColor;
+  final int backgroundColor;
+  final double correctionLevel;
+  final String? logoPath;
+  final String? frameText;
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -41,21 +98,6 @@ class QRData {
       'logoPath': logoPath,
       'frameText': frameText,
     };
-  }
-
-  factory QRData.fromJson(Map<String, dynamic> json) {
-    return QRData(
-      id: json['id'],
-      type: QRType.values[json['type']],
-      title: json['title'],
-      content: json['content'],
-      createdAt: DateTime.parse(json['createdAt']),
-      foregroundColor: json['foregroundColor'],
-      backgroundColor: json['backgroundColor'],
-      correctionLevel: json['correctionLevel'],
-      logoPath: json['logoPath'],
-      frameText: json['frameText'],
-    );
   }
 
   QRData copyWith({
@@ -98,9 +140,6 @@ class QRData {
 }
 
 class URLQRData extends QRData {
-  final String url;
-  final bool isDynamicShortLink;
-
   URLQRData({
     required this.url,
     this.isDynamicShortLink = false,
@@ -115,6 +154,9 @@ class URLQRData extends QRData {
           content: url,
         );
 
+  final String url;
+  final bool isDynamicShortLink;
+
   @override
   Map<String, dynamic> toJson() {
     return super.toJson()..addAll({
@@ -125,12 +167,6 @@ class URLQRData extends QRData {
 }
 
 class VCardQRData extends QRData {
-  final String fullName;
-  final String phone;
-  final String email;
-  final String organization;
-  final String website;
-
   VCardQRData({
     required this.fullName,
     this.phone = '',
@@ -147,6 +183,12 @@ class VCardQRData extends QRData {
           title: 'vCard',
           content: _generateVCard(fullName, phone, email, organization, website),
         );
+
+  final String fullName;
+  final String phone;
+  final String email;
+  final String organization;
+  final String website;
 
   static String _generateVCard(
     String fullName,
@@ -172,11 +214,6 @@ END:VCARD''';
 }
 
 class WiFiQRData extends QRData {
-  final String ssid;
-  final String password;
-  final String encryptionType;
-  final bool isHidden;
-
   WiFiQRData({
     required this.ssid,
     this.password = '',
@@ -193,6 +230,11 @@ class WiFiQRData extends QRData {
           content: _generateWiFi(ssid, password, encryptionType, isHidden),
         );
 
+  final String ssid;
+  final String password;
+  final String encryptionType;
+  final bool isHidden;
+
   static String _generateWiFi(
     String ssid,
     String password,
@@ -205,9 +247,6 @@ class WiFiQRData extends QRData {
 }
 
 class TextQRData extends QRData {
-  final String text;
-  final int charCount;
-
   TextQRData({
     required this.text,
     super.foregroundColor,
@@ -221,4 +260,7 @@ class TextQRData extends QRData {
           title: 'Text',
           content: text,
         );
+
+  final String text;
+  final int charCount;
 }

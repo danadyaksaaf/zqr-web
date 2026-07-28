@@ -7,9 +7,9 @@ import '../services/qr_export_service.dart';
 import '../widgets/qr_preview.dart';
 
 class HistoryScreen extends StatefulWidget {
-  final void Function(int tabIndex, QRData data, {bool markAsSaved}) onNavigateToTab;
-
   const HistoryScreen({super.key, required this.onNavigateToTab});
+
+  final void Function(int tabIndex, QRData data, {bool markAsSaved}) onNavigateToTab;
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -18,16 +18,24 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   final HistoryService _historyService = HistoryService();
   List<QRData> _history = [];
+  List<QRData> _filteredCache = [];
   String _filterType = 'all';
   StreamSubscription<List<QRData>>? _historySubscription;
+
+  static final RegExp _fnRegex = RegExp(r'FN:(.+)');
+  static final RegExp _ssidRegex = RegExp(r'S:([^;]+)');
 
   @override
   void initState() {
     super.initState();
     _history = _historyService.history;
+    _rebuildFilteredCache();
     _historySubscription = _historyService.historyStream.listen((data) {
       if (mounted) {
-        setState(() => _history = data);
+        setState(() {
+          _history = data;
+          _rebuildFilteredCache();
+        });
       }
     });
   }
@@ -38,22 +46,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.dispose();
   }
 
-  List<QRData> get _filteredHistory {
-    if (_filterType == 'all') return _history;
-    return _history.where((item) => item.type.name == _filterType).toList();
+  List<QRData> get _filteredHistory => _filteredCache;
+
+  void _rebuildFilteredCache() {
+    if (_filterType == 'all') {
+      _filteredCache = _history;
+    } else {
+      _filteredCache = _history.where((item) => item.type.name == _filterType).toList();
+    }
   }
 
   int _tabIndexForType(QRType type) {
-    switch (type) {
-      case QRType.text:
-        return 0;
-      case QRType.url:
-        return 1;
-      case QRType.vcard:
-        return 2;
-      case QRType.wifi:
-        return 3;
-    }
+    return type.tabIndex;
   }
 
   void _navigateToGenerator(QRData item) {
@@ -61,22 +65,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _deleteItem(String id) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete QR Code'),
-        content: Text('Are you sure you want to delete this QR code?'),
+        title: const Text('Delete QR Code'),
+        content: const Text('Are you sure you want to delete this QR code?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
               await _historyService.removeItem(id);
               if (mounted) Navigator.pop(this.context);
             },
-            child: Text('Delete', style: TextStyle(color: AppTheme.error)),
+            child: const Text('Delete', style: TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -84,22 +88,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _clearAll() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Clear History'),
-        content: Text('Are you sure you want to clear all history?'),
+        title: const Text('Clear History'),
+        content: const Text('Are you sure you want to clear all history?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
               await _historyService.clear();
               if (mounted) Navigator.pop(this.context);
             },
-            child: Text('Clear All', style: TextStyle(color: AppTheme.error)),
+            child: const Text('Clear All', style: TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -111,10 +115,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
       case QRType.url:
         return item.content;
       case QRType.vcard:
-        final fnMatch = RegExp(r'FN:(.+)').firstMatch(item.content);
+        final fnMatch = _fnRegex.firstMatch(item.content);
         return fnMatch != null ? fnMatch.group(1)! : item.content;
       case QRType.wifi:
-        final ssidMatch = RegExp(r'S:([^;]+)').firstMatch(item.content);
+        final ssidMatch = _ssidRegex.firstMatch(item.content);
         return ssidMatch != null ? ssidMatch.group(1)! : item.content;
       case QRType.text:
         return item.content;
@@ -122,29 +126,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   String _getTypeName(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return 'URL';
-      case QRType.vcard:
-        return 'vCard';
-      case QRType.wifi:
-        return 'Wi-Fi';
-      case QRType.text:
-        return 'Text';
-    }
+    return type.typeName;
   }
 
   IconData _getTypeIcon(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return Icons.link;
-      case QRType.vcard:
-        return Icons.badge;
-      case QRType.wifi:
-        return Icons.wifi;
-      case QRType.text:
-        return Icons.text_fields;
-    }
+    return type.typeIcon;
   }
 
   @override
@@ -153,7 +139,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -168,8 +154,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 8),
+                      const Text(
                         'Manage your previously generated QR codes',
                         style: TextStyle(color: AppTheme.textSecondary),
                       ),
@@ -177,7 +163,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               if (_history.isNotEmpty)
                 Row(
                   children: [
@@ -195,28 +181,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     OutlinedButton.icon(
                       onPressed: _clearAll,
-                      icon: Icon(Icons.delete_sweep, size: 18),
-                      label: Text('Clear All'),
+                      icon: const Icon(Icons.delete_sweep, size: 18),
+                      label: const Text('Clear All'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.error,
-                        side: BorderSide(color: AppTheme.error),
+                        side: const BorderSide(color: AppTheme.error),
                       ),
                     ),
                   ],
                 ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
           ),
         ),
         Expanded(
           child: _filteredHistory.isEmpty
               ? Card(
-                  margin: EdgeInsets.symmetric(horizontal: 24),
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
                   child: Padding(
-                    padding: EdgeInsets.all(48),
+                    padding: const EdgeInsets.all(48),
                     child: Center(
                       child: Column(
                         children: [
@@ -227,12 +213,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               alpha: 0.5,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             _history.isEmpty
                                 ? 'No QR codes generated yet'
                                 : 'No items match the filter',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppTheme.textSecondary,
                               fontSize: 16,
                             ),
@@ -248,7 +234,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         .floor()
                         .clamp(2, 10);
                     return GridView.builder(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 8,
                       ),
@@ -273,12 +259,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget _buildFilterChip(String value, String label) {
     final isSelected = _filterType == value;
     return Padding(
-      padding: EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
         label: Text(label),
         selected: isSelected,
         onSelected: (selected) {
-          setState(() => _filterType = value);
+          setState(() {
+            _filterType = value;
+            _rebuildFilteredCache();
+          });
         },
         selectedColor: AppTheme.primaryPurple.withValues(alpha: 0.2),
         checkmarkColor: AppTheme.primaryPurple,
@@ -292,7 +281,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -306,10 +295,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         size: 16,
                         color: AppTheme.primaryPurple,
                       ),
-                      SizedBox(width: 6),
+                      const SizedBox(width: 6),
                       Text(
                         _getTypeName(item.type),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryPurple,
                           fontSize: 12,
@@ -320,9 +309,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   PopupMenuButton<String>(
                     padding: EdgeInsets.zero,
                     iconSize: 20,
-                    icon: Icon(Icons.more_vert, size: 20),
+                    icon: const Icon(Icons.more_vert, size: 20),
                     itemBuilder: (context) => [
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: 'details',
                         child: Row(
                           children: [
@@ -332,8 +321,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ],
                         ),
                       ),
-                      PopupMenuDivider(),
-                      PopupMenuItem(
+                      const PopupMenuDivider(),
+                      const PopupMenuItem(
                         value: 'svg',
                         child: Row(
                           children: [
@@ -343,7 +332,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ],
                         ),
                       ),
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: 'png',
                         child: Row(
                           children: [
@@ -353,8 +342,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ],
                         ),
                       ),
-                      PopupMenuDivider(),
-                      PopupMenuItem(
+                      const PopupMenuDivider(),
+                      const PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
@@ -387,7 +376,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Expanded(
                 child: Center(
                   child: SizedBox(
@@ -397,17 +386,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 _getDisplayName(item),
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               Text(
                 _formatDate(item.createdAt),
-                style: TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+                style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
               ),
             ],
           ),

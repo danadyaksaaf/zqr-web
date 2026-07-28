@@ -3,17 +3,6 @@ import '../theme/app_theme.dart';
 import 'color_picker.dart';
 
 class CustomizationPanel extends StatelessWidget {
-  final int foregroundColor;
-  final int backgroundColor;
-  final double correctionLevel;
-  final String? frameText;
-  final ValueChanged<int> onForegroundColorChanged;
-  final ValueChanged<int> onBackgroundColorChanged;
-  final ValueChanged<double> onCorrectionLevelChanged;
-  final ValueChanged<String?> onFrameTextChanged;
-  final VoidCallback? onSave;
-  final bool isSaved;
-
   const CustomizationPanel({
     super.key,
     required this.foregroundColor,
@@ -28,11 +17,22 @@ class CustomizationPanel extends StatelessWidget {
     this.isSaved = false,
   });
 
+  final int foregroundColor;
+  final int backgroundColor;
+  final double correctionLevel;
+  final String? frameText;
+  final ValueChanged<int> onForegroundColorChanged;
+  final ValueChanged<int> onBackgroundColorChanged;
+  final ValueChanged<double> onCorrectionLevelChanged;
+  final ValueChanged<String?> onFrameTextChanged;
+  final VoidCallback? onSave;
+  final bool isSaved;
+
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -42,31 +42,31 @@ class CustomizationPanel extends StatelessWidget {
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             QrColorPicker(
               label: 'Foreground Color',
               currentColor: foregroundColor,
               onChanged: onForegroundColorChanged,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             QrColorPicker(
               label: 'Background Color',
               currentColor: backgroundColor,
               onChanged: onBackgroundColorChanged,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildCorrectionLevelSlider(context),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildFrameTextField(context),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (onSave != null)
               SizedBox(
                 width: double.infinity,
                 child: isSaved
                     ? ElevatedButton.icon(
                         onPressed: null,
-                        icon: Icon(Icons.check_circle_outline),
-                        label: Text('Saved to History'),
+                        icon: const Icon(Icons.check_circle_outline),
+                        label: const Text('Saved to History'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.success.withValues(
                             alpha: 0.15,
@@ -80,8 +80,8 @@ class CustomizationPanel extends StatelessWidget {
                       )
                     : ElevatedButton.icon(
                         onPressed: onSave,
-                        icon: Icon(Icons.bookmark_add_outlined),
-                        label: Text('Save to History'),
+                        icon: const Icon(Icons.bookmark_add_outlined),
+                        label: const Text('Save to History'),
                       ),
               ),
           ],
@@ -103,7 +103,7 @@ class CustomizationPanel extends StatelessWidget {
       children: [
         Row(
           children: [
-            Flexible(
+            const Flexible(
               child: Text(
                 'Error Correction',
                 style: TextStyle(fontWeight: FontWeight.w500),
@@ -111,11 +111,11 @@ class CustomizationPanel extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Flexible(
               child: Text(
                 getLevelLabel(correctionLevel),
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.primaryPurple,
                   fontWeight: FontWeight.w600,
                 ),
@@ -141,7 +141,7 @@ class CustomizationPanel extends StatelessWidget {
   Widget _buildFrameTextField(BuildContext context) {
     return TextFormField(
       initialValue: frameText,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: 'Frame Text (optional)',
         hintText: 'e.g., Scan Me',
         prefixIcon: Icon(Icons.text_fields_outlined),
