@@ -8,6 +8,7 @@ class ConnectivityService {
 
   final Connectivity _connectivity = Connectivity();
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
   bool _lastState = true;
 
   Stream<bool> get onConnectivityChange => _controller.stream;
@@ -18,7 +19,7 @@ class ConnectivityService {
     _lastState = _isConnected(result);
     _controller.add(_lastState);
 
-    _connectivity.onConnectivityChanged.listen((result) {
+    _subscription = _connectivity.onConnectivityChanged.listen((result) {
       final connected = _isConnected(result);
       if (connected != _lastState) {
         _lastState = connected;
@@ -38,6 +39,7 @@ class ConnectivityService {
   }
 
   void dispose() {
+    _subscription?.cancel();
     _controller.close();
   }
 }
