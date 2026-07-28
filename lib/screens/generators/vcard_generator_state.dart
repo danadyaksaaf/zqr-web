@@ -1,43 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../models/qr_data.dart';
-import '../../services/history_service.dart';
-import '../../theme/app_theme.dart';
+import 'base_generator_state.dart';
 
-class VCardGeneratorState {
+class VCardGeneratorState extends BaseGeneratorState<VCardQRData> {
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final organizationController = TextEditingController();
   final websiteController = TextEditingController();
 
-  int foregroundColor = 0xFF212121;
-  int backgroundColor = 0xFFFFFFFF;
-  double correctionLevel = 0.15;
-  String? frameText;
-
-  VCardQRData? currentQR;
-  bool isSaved = false;
-
-  static const int _defaultForegroundColor = 0xFF212121;
-  static const int _defaultBackgroundColor = 0xFFFFFFFF;
-  static const double _defaultCorrectionLevel = 0.15;
-
-  bool get hasUnsavedChanges => currentQR != null && !isSaved;
-
+  @override
   void reset() {
     fullNameController.clear();
     phoneController.clear();
     emailController.clear();
     organizationController.clear();
     websiteController.clear();
-    foregroundColor = _defaultForegroundColor;
-    backgroundColor = _defaultBackgroundColor;
-    correctionLevel = _defaultCorrectionLevel;
-    frameText = null;
-    currentQR = null;
-    isSaved = false;
+    resetBase();
   }
 
+  @override
   void loadFromData(QRData data, {bool markAsSaved = true}) {
     final fnMatch = RegExp(r'FN:(.+)').firstMatch(data.content);
     final telMatch = RegExp(r'TEL:(.+)').firstMatch(data.content);
@@ -50,11 +32,7 @@ class VCardGeneratorState {
     emailController.text = emailMatch?.group(1) ?? '';
     organizationController.text = orgMatch?.group(1) ?? '';
     websiteController.text = urlMatch?.group(1) ?? '';
-    foregroundColor = data.foregroundColor;
-    backgroundColor = data.backgroundColor;
-    correctionLevel = data.correctionLevel;
-    frameText = data.frameText;
-    isSaved = markAsSaved;
+    loadBase(data, markAsSaved: markAsSaved);
     currentQR = VCardQRData(
       fullName: fullNameController.text,
       phone: phoneController.text,
@@ -66,22 +44,6 @@ class VCardGeneratorState {
       correctionLevel: data.correctionLevel,
       frameText: data.frameText,
     );
-  }
-
-  Future<void> saveToHistory(BuildContext context) async {
-    if (currentQR == null) return;
-    isSaved = true;
-    await HistoryService().addItem(currentQR!);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('QR code saved to history'),
-          backgroundColor: AppTheme.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
-    }
   }
 
   void generateQR() {
@@ -103,6 +65,7 @@ class VCardGeneratorState {
     );
   }
 
+  @override
   void dispose() {
     fullNameController.dispose();
     phoneController.dispose();
