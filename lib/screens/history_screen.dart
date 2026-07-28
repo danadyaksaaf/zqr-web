@@ -18,16 +18,24 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   final HistoryService _historyService = HistoryService();
   List<QRData> _history = [];
+  List<QRData> _filteredCache = [];
   String _filterType = 'all';
   StreamSubscription<List<QRData>>? _historySubscription;
+
+  static final RegExp _fnRegex = RegExp(r'FN:(.+)');
+  static final RegExp _ssidRegex = RegExp(r'S:([^;]+)');
 
   @override
   void initState() {
     super.initState();
     _history = _historyService.history;
+    _rebuildFilteredCache();
     _historySubscription = _historyService.historyStream.listen((data) {
       if (mounted) {
-        setState(() => _history = data);
+        setState(() {
+          _history = data;
+          _rebuildFilteredCache();
+        });
       }
     });
   }
@@ -38,22 +46,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.dispose();
   }
 
-  List<QRData> get _filteredHistory {
-    if (_filterType == 'all') return _history;
-    return _history.where((item) => item.type.name == _filterType).toList();
+  List<QRData> get _filteredHistory => _filteredCache;
+
+  void _rebuildFilteredCache() {
+    if (_filterType == 'all') {
+      _filteredCache = _history;
+    } else {
+      _filteredCache = _history.where((item) => item.type.name == _filterType).toList();
+    }
   }
 
   int _tabIndexForType(QRType type) {
-    switch (type) {
-      case QRType.text:
-        return 0;
-      case QRType.url:
-        return 1;
-      case QRType.vcard:
-        return 2;
-      case QRType.wifi:
-        return 3;
-    }
+    return type.tabIndex;
   }
 
   void _navigateToGenerator(QRData item) {
@@ -111,10 +115,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
       case QRType.url:
         return item.content;
       case QRType.vcard:
-        final fnMatch = RegExp(r'FN:(.+)').firstMatch(item.content);
+        final fnMatch = _fnRegex.firstMatch(item.content);
         return fnMatch != null ? fnMatch.group(1)! : item.content;
       case QRType.wifi:
-        final ssidMatch = RegExp(r'S:([^;]+)').firstMatch(item.content);
+        final ssidMatch = _ssidRegex.firstMatch(item.content);
         return ssidMatch != null ? ssidMatch.group(1)! : item.content;
       case QRType.text:
         return item.content;
@@ -122,29 +126,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   String _getTypeName(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return 'URL';
-      case QRType.vcard:
-        return 'vCard';
-      case QRType.wifi:
-        return 'Wi-Fi';
-      case QRType.text:
-        return 'Text';
-    }
+    return type.typeName;
   }
 
   IconData _getTypeIcon(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return Icons.link;
-      case QRType.vcard:
-        return Icons.badge;
-      case QRType.wifi:
-        return Icons.wifi;
-      case QRType.text:
-        return Icons.text_fields;
-    }
+    return type.typeIcon;
   }
 
   @override
@@ -278,7 +264,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
         label: Text(label),
         selected: isSelected,
         onSelected: (selected) {
-          setState(() => _filterType = value);
+          setState(() {
+            _filterType = value;
+            _rebuildFilteredCache();
+          });
         },
         selectedColor: AppTheme.primaryPurple.withValues(alpha: 0.2),
         checkmarkColor: AppTheme.primaryPurple,
