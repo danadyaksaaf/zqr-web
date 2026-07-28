@@ -151,6 +151,7 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _state = _UploadState.error;
         _errorMsg = 'No QR code detected in the image.';
+        _imageBytes = null;
       });
       return;
     }
@@ -159,6 +160,7 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _state = _UploadState.error;
         _errorMsg = 'Failed to decode QR code. Please try another image.';
+        _imageBytes = null;
       });
       return;
     }
@@ -167,6 +169,7 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _state = _UploadState.error;
         _errorMsg = 'QR Code format is unsupported.';
+        _imageBytes = null;
       });
       return;
     }
@@ -174,6 +177,7 @@ class _UploadScreenState extends State<UploadScreen> {
     setState(() {
       _state = _UploadState.decoded;
       _decodeResult = result;
+      _imageBytes = null;
     });
   }
 
@@ -202,42 +206,15 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   int? _getTabIndex(QRType type) {
-    switch (type) {
-      case QRType.text:
-        return 0;
-      case QRType.url:
-        return 1;
-      case QRType.vcard:
-        return 2;
-      case QRType.wifi:
-        return 3;
-    }
+    return type.tabIndex;
   }
 
   String _formatTypeName(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return 'URL';
-      case QRType.vcard:
-        return 'vCard';
-      case QRType.wifi:
-        return 'Wi-Fi';
-      case QRType.text:
-        return 'Text';
-    }
+    return type.typeName;
   }
 
   IconData _formatIcon(QRType type) {
-    switch (type) {
-      case QRType.url:
-        return Icons.link;
-      case QRType.vcard:
-        return Icons.badge;
-      case QRType.wifi:
-        return Icons.wifi;
-      case QRType.text:
-        return Icons.text_fields;
-    }
+    return type.typeIcon;
   }
 
   Widget _buildUploadZone() {
