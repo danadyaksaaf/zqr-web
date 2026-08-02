@@ -107,3 +107,6 @@ coverage/lcov.info
 .env
 .env.local
 .env.*.local
+
+# Brief Related
+/brief/project_brief.md
